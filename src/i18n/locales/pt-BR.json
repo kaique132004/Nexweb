@@ -1,0 +1,79 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Ações",
+    "noData": "Nenhum dado disponível",
+    "selectAll": "Selecionar Todos",
+    "deselectAll": "Desmarcar Todos"
+  },
+  "dashboard": {
+    "title": "Dashboard de Consumo",
+    "description": "Visualização de uso de suprimentos por período, região e supply.",
+    "startDate": "Data inicial",
+    "endDate": "Data final",
+    "regionFilter": "Filtro região",
+    "global": "Global",
+    "regionsMulti": "Regiões (multi)",
+    "supplies": "Suprimentos",
+    "loadingMovements": "Carregando movimentações...",
+    "errorLoading": "Erro ao carregar dados"
+  },
+  "preferences": {
+    "title": "Preferências",
+    "editTitle": "Editar Preferências",
+    "editDescription": "Configure seu idioma e notificações.",
+    "language": "Idioma",
+    "notifications": "Notificações",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "enableNotifications": "Ativar Notificações",
+    "notificationDescription": "Receber notificações sobre eventos importantes",
+    "theme": "Tema",
+    "updateSuccess": "Preferências atualizadas com sucesso",
+    "updateError": "Falha ao salvar preferências",
+    "loadError": "Falha ao carregar preferências"
+  },
+  "user": {
+    "personalInfo": "Informações Pessoais",
+    "firstName": "Primeiro Nome",
+    "lastName": "Sobrenome",
+    "email": "Endereço de Email",
+    "username": "Nome de Usuário",
+    "role": "Função",
+    "phone": "Telefone",
+    "accountType": "Tipo de conta",
+    "regions": "Regiões",
+    "permanent": "Permanente",
+    "temporary": "Temporária",
+    "editPersonalInfo": "Editar Informações Pessoais",
+    "updateSuccess": "Informações atualizadas com sucesso",
+    "updateError": "Falha ao salvar alterações"
+  },
+  "columns": {
+    "title": "Visibilidade de Colunas",
+    "description": "Configure quais colunas são visíveis em cada tabela",
+    "editTitle": "Configurações de Visibilidade de Colunas",
+    "editDescription": "Selecione quais colunas exibir em cada visualização de tabela.",
+    "columns": "Colunas",
+    "transactions": "Transações",
+    "supply": "Suprimentos",
+    "regions": "Regiões",
+    "users": "Usuários",
+    "updateSuccess": "Configurações de visibilidade salvas com sucesso",
+    "updateError": "Falha ao salvar configurações"
+  },
+  "languages": {
+    "en-US": "Inglês (EUA)",
+    "pt-BR": "Português (BR)"
+  }
+}

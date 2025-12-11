@@ -1,0 +1,79 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "actions": "Actions",
+    "noData": "No data available",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
+  },
+  "dashboard": {
+    "title": "Consumption Dashboard",
+    "description": "Visualization of supply usage by period, region and supply.",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "regionFilter": "Region Filter",
+    "global": "Global",
+    "regionsMulti": "Regions (multi)",
+    "supplies": "Supplies",
+    "loadingMovements": "Loading movements...",
+    "errorLoading": "Error loading data"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "editTitle": "Edit Preferences",
+    "editDescription": "Update your language and notification settings.",
+    "language": "Language",
+    "notifications": "Notifications",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enableNotifications": "Enable Notifications",
+    "notificationDescription": "Receive notifications about important events",
+    "theme": "Theme",
+    "updateSuccess": "Preferences updated successfully",
+    "updateError": "Failed to save preferences",
+    "loadError": "Failed to load preferences"
+  },
+  "user": {
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "username": "Username",
+    "role": "Role",
+    "phone": "Phone",
+    "accountType": "Type of account",
+    "regions": "Regions",
+    "permanent": "Permanent",
+    "temporary": "Temporary",
+    "editPersonalInfo": "Edit Personal Info",
+    "updateSuccess": "User information updated successfully",
+    "updateError": "Failed to save changes"
+  },
+  "columns": {
+    "title": "Column Visibility",
+    "description": "Configure which columns are visible in each table",
+    "editTitle": "Column Visibility Settings",
+    "editDescription": "Select which columns to display in each table view.",
+    "columns": "Columns",
+    "transactions": "Transactions",
+    "supply": "Supply",
+    "regions": "Regions",
+    "users": "Users",
+    "updateSuccess": "Column visibility settings saved successfully",
+    "updateError": "Failed to save settings"
+  },
+  "languages": {
+    "en-US": "English (US)",
+    "pt-BR": "Português (BR)"
+  }
+}
