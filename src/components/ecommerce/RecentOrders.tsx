@@ -10,10 +10,12 @@ import { useEffect, useState } from "react";
 import type { TransactionResponse } from "../tables/SupplyList/ConsumptionsTable";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
+import { useTranslation } from "react-i18next";
 
 export default function RecentOrders() {
   const [, setLoading] = useState(false);
   const [transaction, setTransactions] = useState<TransactionResponse[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -25,6 +27,7 @@ export default function RecentOrders() {
         if (!data) setTransactions([]);
         else setTransactions(data)
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error(error)
       } finally {
@@ -40,7 +43,7 @@ export default function RecentOrders() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 ">
-            Recent Orders
+            {t("dashboard.recent_orders")}
           </h3>
         </div>
 
@@ -81,10 +84,10 @@ export default function RecentOrders() {
                 strokeWidth="1.5"
               />
             </svg>
-            Filter
+            {t("common.filter")}
           </button>
           <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200">
-            See all
+            {t("common.see_all")}
           </button>
         </div>
       </div>

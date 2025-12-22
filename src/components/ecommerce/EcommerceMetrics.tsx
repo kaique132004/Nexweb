@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -48,6 +49,7 @@ export default function EcommerceMetrics({
   );
 
   const totalOrders = outMovements.length;
+  const { t } = useTranslation();
 
   let consumptionChangePercent: number | null = null;
   let ordersChangePercent: number | null = null;
@@ -103,7 +105,7 @@ export default function EcommerceMetrics({
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total consumido ({regionFilter === "GLOBAL" ? "Global" : regionFilter})
+              {t("dashboard.total")} ({regionFilter === "GLOBAL" ? "Global" : regionFilter})
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm">
               {totalConsumed.toLocaleString("pt-BR")}
@@ -121,7 +123,7 @@ export default function EcommerceMetrics({
         <div className="flex items-end justify-between mt-5 dark:text-gray-800">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Movimentos de saída
+              {t("dashboard.movements")}
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm">
               {totalOrders.toLocaleString("pt-BR")}

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../assets/icons";
+import { useTranslation } from "react-i18next";
 
 type Movement = {
   id: number;
@@ -32,6 +33,7 @@ export default function MonthlyTarget({
   regionFilter = "GLOBAL",
 }: MonthlyTargetProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const {t} = useTranslation();
 
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -178,10 +180,10 @@ export default function MonthlyTarget({
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Monthly Target
+              {t("dashboard.monthly")}
             </h3>
             <p className="mt-1 text-gray-500 text-theme-sm dark:text-[#FFB81C]">
-              Comparação com o mês anterior (
+              {t("dashboard.monthly_description")} (
               {regionFilter === "GLOBAL" ? "Global" : regionFilter})
             </p>
           </div>
@@ -235,15 +237,15 @@ export default function MonthlyTarget({
         </div>
 
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-          Mês atual consumiu{" "}
+          {t("monthly.current")}{" "}
           <strong>{currentMonthConsumption.toLocaleString("pt-BR")}</strong>{" "}
-          unidades, comparado com{" "}
+          {t("monthly.units")}{" "}
           <strong>{previousMonthConsumption.toLocaleString("pt-BR")}</strong>{" "}
-          no mês anterior (
+          {t("monthly.previous")} (
           {progressPercentReal
-            ? `${progressPercentReal.toFixed(1)}% do mês anterior`
-            : "sem histórico suficiente"}
-          ). Menor uso significa menor gasto com suprimentos.
+            ? `${progressPercentReal.toFixed(1)}% ${t("monthly.percent_previous")}`
+            : ""}
+          ). {t("monthly.lower")}
         </p>
       </div>
     </div>

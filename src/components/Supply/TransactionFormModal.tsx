@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/pages/consumptions/TransactionRequestModal.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
@@ -8,6 +7,7 @@ import Label from "../../components/form/Label";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import type { TransactionResponse } from "../tables/SupplyList/ConsumptionsTable";
+import { useTranslation } from "react-i18next";
 
 interface RegionAPI {
   id: string;
@@ -42,7 +42,7 @@ interface TransactionRequestModalProps {
   isOpen: boolean;
   closeModal: () => void;
   onSaved?: () => void;
-  transaction: TransactionResponse | null; // se vier preenchido, podemos usar pra edição
+  transaction: TransactionResponse | null;
 }
 
 type FormState = {
@@ -72,7 +72,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
   const [supplies, setSupplies] = useState<SupplyOption[]>([]);
   const [regions, setRegions] = useState<RegionAPI[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
-
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [loadingRefs, setLoadingRefs] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +80,6 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
   const isEditMode = useMemo(() => !!transaction, [transaction]);
 
-  // Carrega suppliers e regions + seta defaults quando abre o modal
   useEffect(() => {
     if (!isOpen) return;
 
@@ -98,7 +97,6 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
         setRegions(regionsRes ?? []);
 
         setForm((prev) => {
-          // Se estiver editando, podemos pré-preencher aqui (caso você queira edição)
           if (transaction) {
             return {
               supply_id: String(transaction.supply_name),
@@ -117,16 +115,15 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
             created:
               prev.created ||
               new Date().toISOString().slice(0, 16),
-            // se quiser defaultar tipo para OUT (saída)
             type_entry: prev.type_entry || "OUT",
           };
         });
       } catch (err: any) {
-        console.error("Erro ao carregar referências:", err);
+        console.error("Error loading references:", err);
         setError(
           err?.response?.data?.message ??
-            err.message ??
-            "Erro ao carregar suprimentos/regiões."
+          err.message ??
+          "Error loading supplies/regions."
         );
       } finally {
         setLoadingRefs(false);
@@ -138,30 +135,30 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
   const handleTextChange =
     (field: keyof FormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      const value = e.target.value;
-      setForm((prev) => ({ ...prev, [field]: value }));
-      setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
-    };
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setForm((prev) => ({ ...prev, [field]: value }));
+        setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+      };
 
   const validateForm = (): boolean => {
     const errors: Partial<Record<keyof FormState, string>> = {};
 
-    if (!form.supply_id) errors.supply_id = "Supply é obrigatório.";
-    if (!form.region_id) errors.region_id = "Região é obrigatória.";
+    if (!form.supply_id) errors.supply_id = "Supply is required.";
+    if (!form.region_id) errors.region_id = "Region is required.";
 
     if (!form.quantity_amended) {
-      errors.quantity_amended = "Quantidade é obrigatória.";
+      errors.quantity_amended = "Quantity is required.";
     } else if (Number(form.quantity_amended) <= 0) {
-      errors.quantity_amended = "Quantidade deve ser maior que zero.";
+      errors.quantity_amended = "Quantity must be greater than zero.";
     }
 
-    if (!form.type_entry) errors.type_entry = "Tipo de movimentação é obrigatório.";
+    if (!form.type_entry) errors.type_entry = "Movement type is required.";
 
     setFieldErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-      setError("Corrija os campos destacados.");
+      setError("Fix the highlighted fields.");
       return false;
     }
 
@@ -206,12 +203,12 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
       setForm(emptyForm);
       setFieldErrors({});
     } catch (err: any) {
-      console.error("Erro ao salvar transação:", err);
+      console.error("Error saving transaction:", err);
       const backendMessage =
         err?.response?.data?.message ??
         err?.response?.data?.error ??
         err.message;
-      setError(backendMessage || "Erro ao salvar transação.");
+      setError(backendMessage || "Error saving transaction.");
     } finally {
       setSaving(false);
     }
@@ -226,9 +223,9 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
   };
 
   const title = isEditMode
-    ? "Editar Movimentação de Suprimento"
-    : "Registrar Movimentação de Suprimento";
-  const primaryLabel = saving ? "Salvando..." : isEditMode ? "Salvar alterações" : "Salvar";
+    ? t("movements.title_form_edit_movement")
+    : t("movements.title_form_movement");
+  const primaryLabel = saving ? "Salvando..." : isEditMode ? t("movements.form_save_changes") : t("movements.form_save");
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} className="max-w-[700px] m-4">
@@ -247,22 +244,21 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
           <div className="custom-scrollbar max-h-[450px] overflow-y-auto px-2 pb-3">
             <div className="mt-7">
               <h5 className="mb-5 text-lg font-medium text-white lg:mb-6">
-                Dados da movimentação
+                {t("movements.transaction_description")}
               </h5>
 
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 {/* Supply */}
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Suprimento</Label>
+                  <Label>{t("movements.form_supply_movement")}</Label>
                   <select
-                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${
-                      fieldErrors.supply_id ? "border-red-500" : ""
-                    }`}
+                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${fieldErrors.supply_id ? "border-red-500" : ""
+                      }`}
                     value={form.supply_id}
                     onChange={handleTextChange("supply_id")}
                     disabled={loadingRefs || saving || isEditMode}
                   >
-                    <option value="">Selecione o suprimento</option>
+                    <option value="">{t("movements.form_supply_movement_placeholder")}</option>
                     {supplies.map((s) => (
                       <option
                         key={s.id}
@@ -282,16 +278,15 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
                 {/* Region */}
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Região</Label>
+                  <Label>{t("movements.form_region_movement")}</Label>
                   <select
-                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${
-                      fieldErrors.region_id ? "border-red-500" : ""
-                    }`}
+                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${fieldErrors.region_id ? "border-red-500" : ""
+                      }`}
                     value={form.region_id}
                     onChange={handleTextChange("region_id")}
                     disabled={loadingRefs || saving || isEditMode}
                   >
-                    <option value="">Selecione a região</option>
+                    <option value="">{t("movements.form_region_movement_placeholder")}</option>
                     {regions.map((r) => (
                       <option
                         key={r.id}
@@ -311,7 +306,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
                 {/* Quantity Amended */}
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Quantidade</Label>
+                  <Label>{t("movements.form_quantity_movement")}</Label>
                   <Input
                     type="number"
                     min="0"
@@ -328,21 +323,20 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
                 {/* Type Entry */}
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Tipo de movimentação</Label>
+                  <Label>{t("movements.form_type_movement")}</Label>
                   <select
-                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${
-                      fieldErrors.type_entry ? "border-red-500" : ""
-                    }`}
+                    className={`w-full rounded-md border p-2 text-sm text-white outline-none bg-transparent border-slate-600 ${fieldErrors.type_entry ? "border-red-500" : ""
+                      }`}
                     value={form.type_entry}
                     onChange={handleTextChange("type_entry")}
                     disabled={saving}
                   >
-                    <option value="">Selecione o tipo</option>
+                    <option value="">{t("movements.form_type_movement_placeholder")}</option>
                     <option value="IN" className="bg-slate-900 text-white">
-                      Entrada (ADD)
+                      {t("movements.form_type_movement_add")}
                     </option>
                     <option value="OUT" className="bg-slate-900 text-white">
-                      Saída (REMOVE)
+                      {t("movements.form_type_movement_out")}
                     </option>
                   </select>
                   {fieldErrors.type_entry && (
@@ -354,7 +348,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
                 {/* Created */}
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Data / Hora</Label>
+                  <Label>{t("movements.form_date_movement")}</Label>
                   <input
                     type="datetime-local"
                     className="w-full rounded-md border border-slate-600 bg-transparent p-2 text-sm text-white outline-none"
@@ -366,7 +360,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
 
                 {/* Obs */}
                 <div className="col-span-2">
-                  <Label>Observação (opcional)</Label>
+                  <Label>{t("movements.form_obs_movement")}</Label>
                   <textarea
                     className="w-full rounded-md border border-slate-600 bg-transparent p-2 text-sm text-white outline-none"
                     rows={3}
@@ -390,7 +384,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
               onClick={handleClose}
               disabled={saving}
             >
-              Fechar
+              {t("movements.form_close")}
             </Button>
             <Button size="sm" type="submit" disabled={saving || loadingRefs}>
               {primaryLabel}

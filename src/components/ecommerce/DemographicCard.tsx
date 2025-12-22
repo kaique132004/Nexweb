@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "../../assets/icons";
+// import { Dropdown } from "../ui/dropdown/Dropdown";
+// import { DropdownItem } from "../ui/dropdown/DropdownItem";
+// import { MoreDotIcon } from "../../assets/icons";
 import CountryMap from "./CountryMap";
 import type { RegionAPI } from "../Regions/RegionFormModal";
 import type { TransactionResponse } from "../tables/SupplyList/ConsumptionsTable";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
+import { useTranslation } from "react-i18next";
 
 type ViewMode = "GLOBAL" | "REGIONAL";
 
@@ -17,54 +18,58 @@ interface StatItem {
   percentage: number; // % da quantidade total
 }
 
-export default function DemographicCard() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("GLOBAL");
-  const [selectedCountry, setSelectedCountry] = useState<string | "GLOBAL">(
-    "GLOBAL"
-  );
+type DemographicCardProps = {
+  data: TransactionResponse[];
+  regionFilter?: string;
+};
 
+export default function DemographicCard({
+  data,
+  regionFilter = "GLOBAL",
+}: DemographicCardProps) {
+  // const [isOpen, setIsOpen] = useState(false);
+  const [viewMode] = useState<ViewMode>("GLOBAL");
+  const [selectedCountry] = useState<string | "GLOBAL">("GLOBAL");
   const [regions, setRegions] = useState<RegionAPI[]>([]);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {t} = useTranslation();
 
+  // Buscar regiões ao montar o componente
   useEffect(() => {
-    const loadData = async () => {
+    const fetchRegions = async () => {
       try {
-        setLoading(true);
-        const [regionRes, txRes] = await Promise.all([
-          authFetch<RegionAPI[]>(`${API_ENDPOINTS.region}`),
-          authFetch<TransactionResponse[]>(`${API_ENDPOINTS.transaction}/list`),
-        ]);
-
-        if (regionRes) setRegions(regionRes);
-        if (txRes) setTransactions(txRes);
-      } catch (err) {
-        console.error("Erro ao carregar dados para DemographicCard:", err);
-      } finally {
-        setLoading(false);
+        const response = await authFetch<RegionAPI[]>(`${API_ENDPOINTS.region}`);
+        if (response) {
+          const regionsData = await response;
+          setRegions(regionsData);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar regiões:", error);
       }
     };
-    loadData();
+    fetchRegions();
   }, []);
 
-  const countryOptions = useMemo(() => {
-    const set = new Set<string>();
-    regions.forEach((r) => {
-      if (r.country_name) set.add(r.country_name);
+  // Filtrar transações
+  const transactions = useMemo(() => {
+    return data.filter((item) => {
+      if (item.type_entry !== "OUT") return false;
+      if (regionFilter !== "GLOBAL" && item.region_code !== regionFilter) {
+        return false;
+      }
+      return true;
     });
-    return Array.from(set).sort();
-  }, [regions]);
+  }, [data, regionFilter]);
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
-  function closeDropdown() {
-    setIsOpen(false);
-  }
 
-  const effectiveCountryCode =
-    viewMode === "GLOBAL" ? "GLOBAL" : selectedCountry;
+  // function toggleDropdown() {
+  //   setIsOpen(!isOpen);
+  // }
+
+  // function closeDropdown() {
+  //   setIsOpen(false);
+  // }
+
+  const effectiveCountryCode = viewMode === "GLOBAL" ? "GLOBAL" : selectedCountry;
 
   // Mapa rápido de region_code -> RegionAPI
   const regionByCode = useMemo(() => {
@@ -162,13 +167,13 @@ export default function DemographicCard() {
       <div className="flex justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800">
-            Supply Usage by Location
+            {t("dashboard.supply_usage")}
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Quantidade de suprimentos consumidos por país/região (saídas)
+            {t("dashboard.supply_usage_sub")}
           </p>
         </div>
-        <div className="relative inline-block">
+        {/* <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
@@ -190,51 +195,7 @@ export default function DemographicCard() {
               Delete
             </DropdownItem>
           </Dropdown>
-        </div>
-      </div>
-
-      {/* Filtro Global / Regional + seletor de país */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
-        <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 text-xs dark:border-gray-700 dark:bg-gray-800">
-          <button
-            className={`px-3 py-1 rounded-full ${viewMode === "GLOBAL"
-                ? "bg-white text-gray-800 shadow-sm dark:bg-gray-900"
-                : "text-gray-500 dark:text-gray-400"
-              }`}
-            onClick={() => setViewMode("GLOBAL")}
-          >
-            Global
-          </button>
-          <button
-            className={`px-3 py-1 rounded-full ${viewMode === "REGIONAL"
-                ? "bg-white text-gray-800 shadow-sm dark:bg-gray-900"
-                : "text-gray-500 dark:text-gray-400"
-              }`}
-            onClick={() => setViewMode("REGIONAL")}
-          >
-            Por país
-          </button>
-        </div>
-
-        {viewMode === "REGIONAL" && (
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-gray-500 dark:text-gray-400">País:</span>
-            <select
-              value={selectedCountry}
-              onChange={(e) =>
-                setSelectedCountry(e.target.value as string | "GLOBAL")
-              }
-              className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
-            >
-              <option value="GLOBAL">Todos</option>
-              {countryOptions.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        </div> */}
       </div>
 
       {/* MAPA */}
@@ -246,53 +207,40 @@ export default function DemographicCard() {
           <CountryMap countryCode={effectiveCountryCode} />
         </div>
       </div>
+
       {/* LISTA */}
       <div className="space-y-5">
-        {loading && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Carregando estatísticas...
-          </p>
-        )}
-
-        {!loading && stats.length === 0 && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Nenhum dado encontrado.
-          </p>
-        )}
-
-        {!loading &&
-          stats.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <div className="items-center w-full rounded-full max-w-8">
-                  {/* espaço pra bandeira/ícone se quiser */}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-theme-sm">
-                    {item.label}
-                  </p>
-                  <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                    {item.quantity.toLocaleString("pt-BR")} unidades consumidas
-                  </span>
-                </div>
+        {stats.map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="items-center w-full rounded-full max-w-8">
+                {/* espaço pra bandeira/ícone se quiser */}
               </div>
-
-              <div className="flex w-full max-w-[140px] items-center gap-3">
-                <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-                  <div
-                    className="absolute left-0 top-0 flex h-full items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
-                    style={{ width: `${item.percentage}%` }}
-                  />
-                </div>
-                <p className="font-medium text-gray-800 text-theme-sm">
-                  {item.percentage}%
+              <div>
+                <p className="font-semibold text-gray-800 text-theme-sm">
+                  {item.label}
                 </p>
+                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                  {item.quantity.toLocaleString("pt-BR")} {t("common.units_consumed")}
+                </span>
               </div>
             </div>
-          ))}
+            <div className="flex w-full max-w-[140px] items-center gap-3">
+              <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
+                <div
+                  className="absolute left-0 top-0 flex h-full items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
+                  style={{ width: `${item.percentage}%` }}
+                />
+              </div>
+              <p className="font-medium text-gray-800 text-theme-sm">
+                {item.percentage}%
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

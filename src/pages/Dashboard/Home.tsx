@@ -25,7 +25,7 @@ type Movement = {
   price_unit: number;
   total_price: number;
   type_entry: "IN" | "OUT";
-  obs_alter: string | null;
+  obs_alter: string;
 };
 
 type RegionFilter = "GLOBAL" | string;
@@ -277,7 +277,7 @@ export default function Home() {
               }}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              Clear Filters
+              {t("common.clear_filter")}
             </button>
           </div>
         </div>
@@ -322,7 +322,7 @@ export default function Home() {
           </div>
 
           <div className="col-span-12 xl:col-span-5">
-            <DemographicCard />
+            <DemographicCard data={filteredMovements} regionFilter={regionFilter}/>
           </div>
 
           <div className="col-span-12 xl:col-span-7">

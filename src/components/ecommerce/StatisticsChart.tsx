@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 import { type ChartRange } from "../common/ChartTab";
+import { useTranslation } from "react-i18next";
 
 type Movement = {
   id: number;
@@ -29,6 +30,7 @@ export default function StatisticsChart({
   data,
   regionFilter = "GLOBAL",
 }: StatisticsChartProps) {
+    const { t } = useTranslation();
   const [range] = useState<ChartRange>("monthly");
 
   const filteredByRegion = useMemo(
@@ -180,11 +182,11 @@ export default function StatisticsChart({
 
   const series = [
     {
-      name: "Quantidade OUT",
+      name: t("common.qty_out"),
       data: seriesQuantityOut,
     },
     {
-      name: "Total Price OUT", // remova se quiser só quantidade
+      name: t("common.total_price"), // remova se quiser só quantidade
       data: seriesTotalPriceOut,
     },
   ];
@@ -193,9 +195,9 @@ export default function StatisticsChart({
     <div className="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/3 sm:px-6 sm:pt-6">
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
-          <h3 className="text-lg font-semibold text-gray-800">Statistics</h3>
+          <h3 className="text-lg font-semibold text-gray-800">{t("dashboard.statistics")}</h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Consumo ao longo do tempo
+            {t("dashboard.statistics_over_time")}
           </p>
         </div>
       </div>

@@ -1,9 +1,10 @@
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "../../assets/icons";
+// import { Dropdown } from "../ui/dropdown/Dropdown";
+// import { DropdownItem } from "../ui/dropdown/DropdownItem";
+// import { MoreDotIcon } from "../../assets/icons";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 type Movement = {
   id: number;
@@ -37,19 +38,20 @@ export default function MonthlySalesChart({
 }: MonthlySalesChartProps) {
 
 
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
 
   // filtro: "GLOBAL" ou um region_code (ex.: "GRU", "GIG")
-  const [regionFilter, setRegionFilter] = useState<"GLOBAL" | string>("GLOBAL");
+  const [regionFilter] = useState<"GLOBAL" | string>("GLOBAL");
+  const { t } = useTranslation();
 
   // Descobre quais regiões existem no response
-  const regionCodes = useMemo(() => {
-    const set = new Set<string>();
-    data.forEach((item) => {
-      if (item.region_code) set.add(item.region_code);
-    });
-    return Array.from(set).sort();
-  }, [data]);
+  // const regionCodes = useMemo(() => {
+  //   const set = new Set<string>();
+  //   data.forEach((item) => {
+  //     if (item.region_code) set.add(item.region_code);
+  //   });
+  //   return Array.from(set).sort();
+  // }, [data]);
 
   // Processa os dados de acordo com o filtro
   const { categories, seriesData } = useMemo(() => {
@@ -173,28 +175,27 @@ export default function MonthlySalesChart({
     },
   ];
 
-  function toggleDropdown() {
-    setIsOpen((prev) => !prev);
-  }
+  // function toggleDropdown() {
+  //   setIsOpen((prev) => !prev);
+  // }
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  // function closeDropdown() {
+  //   setIsOpen(false);
+  // }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/3 sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold text-gray-800">
-            Monthly Consumption
+            {t("dashboard.monthly_consumption")}
           </h3>
           <p className="text-xs text-gray-500">
-            Quantidade consumida por mês ({regionFilter === "GLOBAL" ? "Global" : regionFilter})
+            {t("dashboard.monthly_consumption_sub")}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Filtro de região */}
+        {/* <div className="flex items-center gap-3">
           <select
             value={regionFilter}
             onChange={(e) =>
@@ -212,8 +213,7 @@ export default function MonthlySalesChart({
             ))}
           </select>
 
-          {/* Dropdown já existente */}
-          <div className="relative inline-block">
+           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
               <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
             </button>
@@ -235,8 +235,8 @@ export default function MonthlySalesChart({
                 Delete
               </DropdownItem>
             </Dropdown>
-          </div>
-        </div>
+          </div> 
+        </div> */}
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">

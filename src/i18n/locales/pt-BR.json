@@ -14,7 +14,16 @@
     "actions": "Ações",
     "noData": "Nenhum dado disponível",
     "selectAll": "Selecionar Todos",
-    "deselectAll": "Desmarcar Todos"
+    "deselectAll": "Desmarcar Todos",
+    "see_all": "Ver todas",
+    "clear_filter": "Limpar Filtros",
+    "view_more": "Ver Mais",
+    "notifications": "Notificações",
+    "qty_out": "Quantidade de Saída",
+    "qty_in": "Quantidade de Entrada",
+    "price_total": "Valor Total",
+    "price_unit": "Preço Unitario",
+    "units_consumed": "Unidades consumidas"
   },
   "dashboard": {
     "title": "Dashboard de Consumo",
@@ -26,7 +35,27 @@
     "regionsMulti": "Regiões (multi)",
     "supplies": "Suprimentos",
     "loadingMovements": "Carregando movimentações...",
-    "errorLoading": "Erro ao carregar dados"
+    "errorLoading": "Erro ao carregar dados",
+    "monthly": "Meta mensal",
+    "monthly_description": "Comparação com o mês anterior",
+    "monthly_body": "Mês atual consumiu 275 unidades, comparado com 0 no mês anterior. Menor uso significa menor gasto com suprimentos.",
+    "total": "Total Consumido",
+    "movements": "Movimentos de Saída",
+    "monthly_consumption": "Movimento mensal",
+    "monthly_consumption_sub": "Quantidade consumida por mês",
+    "statistics": "Estatísticas",
+    "statistics_over_time": "Consumo ao longo do tempo",
+    "supply_usage": "Utilização do abastecimento por localização",
+    "supply_usage_sub": "Quantidade de suprimentos consumidos por país/região (saídas)",
+    "supply_usage_filter": "Por País",
+    "recent_orders": "Movimentos recentes"
+  },
+  "monthly": {
+    "current": "Mês atual consumiu",
+    "units": "unidades, comparado com",
+    "previous": "no mês anterior.",
+    "lower": "Menor uso significa menor gasto com suprimentos.",
+    "percent_previous": "do mês anterior"
   },
   "preferences": {
     "title": "Preferências",
@@ -71,6 +100,30 @@
     "users": "Usuários",
     "updateSuccess": "Configurações de visibilidade salvas com sucesso",
     "updateError": "Falha ao salvar configurações"
+  },
+  "movements": {
+    "transaction_table": "Tabela de Transações",
+    "transaction_description": "Dados da Transação",
+    "export": "Exportar Lista de Transações",
+    "close": "Fechamento Semanal",
+    "filter": "Filtro",
+    "title_form_movement": "Registrar Movimentação de Suprimento",
+    "title_form_edit_movement": "Editar Movimentação de Suprimento",
+    "form_supply_movement": "Suprimento",
+    "form_supply_movement_placeholder": "Selecione o suprimento",
+    "form_quantity_movement": "Quantidade",
+    "form_region_movement": "Região",
+    "form_region_movement_placeholder": "Selecione a região",
+    "form_type_movement": "Tipo de Movimentação",
+    "form_type_movement_placeholder": "Selecione o tipo",
+    "form_type_movement_out": "REMOVER (SAÍDA)",
+    "form_type_movement_add": "ADICIONAR (ENTRADA)",
+    "form_date_movement": "Data / Hora",
+    "form_obs_movement": "Observações (opcional)",
+    "form_close": "Fechar",
+    "form_save": "Salvar",
+    "form_saving": "Salvando...",
+    "form_save_changes": "Salvar alterações"
   },
   "languages": {
     "en-US": "Inglês (EUA)",
