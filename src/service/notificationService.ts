@@ -32,7 +32,7 @@ class NotificationService {
     this.client = new Client({
       brokerURL: wsUrl,
       connectHeaders: {},
-      debug: (str) => {
+      debug: () => {
         // console.log('STOMP: ' + str);
       },
       reconnectDelay: 5000,
@@ -50,12 +50,12 @@ class NotificationService {
       });
     };
 
-    this.client.onStompError = (frame) => {
+    this.client.onStompError = () => {
     //   console.error('Broker reported error: ' + frame.headers['message']);
     //   console.error('Additional details: ' + frame.body);
     };
 
-    this.client.onWebSocketError = (event) => {
+    this.client.onWebSocketError = () => {
     //   console.error('WebSocket error:', event);
     };
 
