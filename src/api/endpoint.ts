@@ -1,4 +1,4 @@
-export const API_BASE = `https://localhost:6081`;
+export const API_BASE = `${process.env.REACT_BACKEND_API_URL || 'http://localhost:9000'}`;
 
 export const API_ENDPOINTS = {
     supply: `${API_BASE}/api/v2/supply`,

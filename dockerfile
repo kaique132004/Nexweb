@@ -1,13 +1,28 @@
-# Etapa 1: Build do app
-FROM node:25 
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
 WORKDIR /app
+
+# Build args
+ARG REACT_APP_API_URL
+ARG REACT_APP_ENV
+
+# Definir como env vars para o build
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV REACT_APP_ENV=$REACT_APP_ENV
+
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --prefer-offline --no-audit
+
 COPY . .
+RUN npm run build
 
-EXPOSE 6083
+# Stage 2: Production
+FROM nginx:alpine
 
-ENV CHOKIDAR_USEPOLLING=true
-ENV WATCHPACK_POLLING=true
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-CMD ["npm", "run", "dev", "--", "--host"]
+EXPOSE 9000
+
+CMD ["nginx", "-g", "daemon off;"]
