@@ -5,7 +5,7 @@ ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
 COPY package*.json ./
-RUN npm ci --prefer-offline --no-audit --force
+RUN npm ci --prefer-offline --no-audit
 
 COPY . .
 RUN npm run build
