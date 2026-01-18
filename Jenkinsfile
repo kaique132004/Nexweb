@@ -23,7 +23,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    npm ci --prefer-offline --no-audit
+                    npm ci --prefer-offline --no-audit --force
                 '''
             }
         }
