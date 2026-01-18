@@ -53,7 +53,7 @@ pipeline {
                         ? 'https://200.178.4.120:6081' 
                         : 'https://200.178.4.120:6081'
 
-                    def envName = env.BRANCH_NAME == 'main' ? 'production' : 'development'
+                    def envName = env.BRANCH_NAME == 'main' ? 'prod' : 'dev'
 
                     sh """
                         sudo podman build \\
