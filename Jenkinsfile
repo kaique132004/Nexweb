@@ -57,7 +57,7 @@ pipeline {
 
                     sh """
                         sudo podman build \\
-                            --build-arg $VITE_API_URL=${apiUrl} \\
+                            --build-arg VITE_API_URL=${apiUrl} \\
                             --build-arg REACT_APP_ENV=${envName} \\
                             -t ${APP_NAME}:${BUILD_NUMBER} .
 
