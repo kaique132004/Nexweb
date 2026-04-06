@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
 import type { TransactionResponse } from "../tables/SupplyList/ConsumptionsTable";
-import type { RegionAPI } from "../Regions/RegionFormModal";
+import type { RegionAPI } from "../../pages/Region/Form/RegionFormModal.tsx";
 
 interface CountryMapProps {
   mapColor?: string;

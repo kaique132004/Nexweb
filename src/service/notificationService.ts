@@ -3,11 +3,42 @@ import { Client } from '@stomp/stompjs';
 import { API_ENDPOINTS } from '../api/endpoint';
 import { authFetch } from '../api/apiAuth';
 
+// 1. Defina a interface para a resposta paginada
+export interface PageableResponse<T> {
+  content: T[];
+  pageable: {
+    page_number: number;
+    page_size: number;
+    sort: {
+      sorted: boolean;
+      unsorted: boolean;
+      empty: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  total_elements: number;
+  total_pages: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: {
+    sorted: boolean;
+    unsorted: boolean;
+    empty: boolean;
+  };
+  first: boolean;
+  number_of_elements: number;
+  empty: boolean;
+}
+
+// 2. Atualize o tipo NotificationType para incluir os novos enums do backend
 export interface Notification {
   id: number;
   title: string;
   message: string;
-  type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS' | 'LOW_STOCK' | 'NEW_SUPPLY' | 'NEW_REGION' | 'NEW_USER';
   is_read: boolean;
   created_at: string;
   read_at?: string;
@@ -20,9 +51,8 @@ class NotificationService {
   private listeners: ((notification: Notification) => void)[] = [];
 
   connect(userId: string) {
-    // Use WebSocket nativo ao invés de SockJS
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const host = import.meta.env.VITE_API_URL?.replace(/^https?:\/\//, '');
+    const host = import.meta.env.VITE_API_URL?.replace(/https?:\/\//, '');
     const wsUrl = `${protocol}://${host}/ws`;
 
     console.log('Connecting to WebSocket:', wsUrl);
@@ -78,14 +108,17 @@ class NotificationService {
     this.listeners.forEach(listener => listener(notification));
   }
 
+  // 3. Ajuste a função getNotifications para lidar com a resposta paginada
   async getNotifications(): Promise<Notification[]> {
     try {
-      const data = await authFetch<Notification[]>(`${API_ENDPOINTS.notifications}`, {
+      // O authFetch agora deve esperar uma PageableResponse<Notification>
+      const response = await authFetch<PageableResponse<Notification>>(`${API_ENDPOINTS.notifications}`, {
         method: 'GET',
       });
 
-      console.log('Fetched notifications:', data);
-      return data || [];
+      console.log('Fetched paginated notifications:', response);
+      // Retorne apenas o array 'content'
+      return response.content || [];
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
       return [];

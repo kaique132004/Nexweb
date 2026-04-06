@@ -13,8 +13,8 @@ interface LoginSuccessResponse {
     username: string;
     email: string;
     role: string;
-    first_name: string; // Adicione first_name
-    last_name: string;  // Adicione last_name
+    first_name?: string; // Adicione first_name
+    last_name?: string;  // Adicione last_name
     two_factor_enabled?: boolean;
 }
 
@@ -27,8 +27,8 @@ interface RedirectResponse {
 }
 
 interface TwoFactorResponse {
-    requires_two_factor: boolean;
-    temp_token: string;
+    requiresTwoFactor: boolean;
+    tempToken: string;
 }
 
 type LoginResponse =
@@ -127,14 +127,15 @@ export default function SignInForm() {
             // ============================
             if (
                 data &&
-                "requires_two_factor" in data &&
-                data.requires_two_factor
+                "requiresTwoFactor" in data && // Note: "requiresTwoFactor" (camelCase)
+                data.requiresTwoFactor
             ) {
                 const twoFaData = data as TwoFactorResponse;
                 navigate("/2fa", {
                     replace: true,
-                    state: {tempToken: twoFaData.temp_token},
+                    state: { tempToken: twoFaData.tempToken },
                 });
+
                 return;
             }
 

@@ -16,6 +16,7 @@ export class AuthFetchError extends Error {
   }
 }
 
+
 export async function authFetch<T = unknown>(
   url: string,
   options: RequestInit = {}

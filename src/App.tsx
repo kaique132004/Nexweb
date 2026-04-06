@@ -21,7 +21,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Asset from "./pages/Dashboard/Asset";
 import UserList from "./pages/List/UserList";
-import RegionList from "./pages/List/RegionList";
+import RegionList from "./pages/Region/RegionList.tsx";
 import SupplyList from "./pages/List/SupplyList";
 import TransactionList from "./pages/List/TransactionList";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
@@ -30,6 +30,7 @@ import FirstLoginPage from "./pages/AuthPages/FirstLoginPage";
 import { NotificationProvider } from "./context/NotificationContext";
 import GenQR from "./pages/QRcode/GenQR";
 import ConsumptionPage from "./pages/Consumptions/ConsumptionPage";
+import TwoFactorAuthPage from "./pages/AuthPages/TwoFactorAuthPage.tsx";
 
 // Componente de proteção
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -80,6 +81,7 @@ export default function App() {
           <Route path="/qrcode" element={<GenQR />} />
         </Route>
         {/* Auth Layout */}
+        <Route path="/2fa" element={<TwoFactorAuthPage />} /> {/* <-- Nova rota */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

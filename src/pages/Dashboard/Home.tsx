@@ -7,9 +7,39 @@ import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
 import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PageMeta from "../../components/common/PageMeta";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react"; // Adicionado useCallback
 import { API_ENDPOINTS } from "../../api/endpoint";
 import { authFetch, AuthFetchError } from "../../api/apiAuth";
+
+// Interface para a estrutura de resposta paginada da API
+interface PageableResponse<T> {
+  content: T[];
+  pageable: {
+    page_number: number;
+    page_size: number;
+    sort: {
+      sorted: boolean;
+      unsorted: boolean;
+      empty: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  total_elements: number;
+  total_pages: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: {
+    sorted: boolean;
+    unsorted: boolean;
+    empty: boolean;
+  };
+  first: boolean;
+  number_of_elements: number;
+  empty: boolean;
+}
 
 type Movement = {
   id: number;
@@ -37,55 +67,77 @@ export default function Home() {
   const [error, setError] = useState("");
   const [regionFilter, setRegionFilter] = useState<RegionFilter>("GLOBAL");
 
+  // Estados para paginação (se você quiser implementar no futuro)
+  // const [currentPage, setCurrentPage] = useState(0);
+  // const [pageSize, setPageSize] = useState(10);
+  // const [totalElements, setTotalElements] = useState(0);
+  // const [totalPages, setTotalPages] = useState(0);
+
   // Filtros
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [selectedSupplies, setSelectedSupplies] = useState<number[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  // Função para carregar os dados das movimentações
+  const loadMovements = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const consumptions = await authFetch<Movement[]>(
+      // Você pode adicionar parâmetros de paginação e filtro aqui se a API suportar
+      // Ex: `${API_ENDPOINTS.transaction}/list?page=${currentPage}&size=${pageSize}&startDate=${startDate}...`
+      const response = await authFetch<PageableResponse<Movement>>(
           `${API_ENDPOINTS.transaction}/list`
-        );
+      );
 
-        if (consumptions) {
-          setMovement(consumptions);
-        }
-      } catch (err: any) {
-        console.error("Erro ao buscar movimentações:", err);
-
-        if (err instanceof AuthFetchError) {
-          if (err.status === 401) {
-            setError(t('dashboard.errorLoading'));
-          } else if (err.status === 403) {
-            setError("You don't have permission to view this data");
-          } else if (err.status >= 500) {
-            setError("Server error. Please try again later.");
-          } else {
-            setError(err.message || t('dashboard.errorLoading'));
-          }
-        } else {
-          setError(err?.message || t('dashboard.errorLoading'));
-        }
-      } finally {
-        setLoading(false);
+      if (response && Array.isArray(response.content)) {
+        setMovement(response.content);
+        // Se for usar paginação, atualize os estados aqui:
+        // setTotalElements(response.total_elements);
+        // setTotalPages(response.total_pages);
+        // setCurrentPage(response.number);
+        // setPageSize(response.size);
+      } else {
+        // Caso a resposta não tenha o formato esperado ou content não seja um array
+        console.warn("API response for movements did not contain an array 'content':", response);
+        setMovement([]);
       }
-    };
+    } catch (err: any) {
+      console.error("Erro ao buscar movimentações:", err);
 
-    fetchData();
-  }, [t]);
+      if (err instanceof AuthFetchError) {
+        if (err.status === 401) {
+          setError(t('dashboard.errorLoading'));
+        } else if (err.status === 403) {
+          setError("You don't have permission to view this data");
+        } else if (err.status >= 500) {
+          setError("Server error. Please try again later.");
+        } else {
+          setError(err.message || t('dashboard.errorLoading'));
+        }
+      } else {
+        setError(err?.message || t('dashboard.errorLoading'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [t]); // Adicione aqui as dependências que loadMovements usa (ex: currentPage, pageSize, startDate, etc.)
+
+  useEffect(() => {
+    loadMovements();
+  }, [loadMovements]); // loadMovements é uma dependência estável graças ao useCallback
 
   // Opções de region_code
   const regionCodes = useMemo(() => {
     const set = new Set<string>();
-    movement.forEach((m) => {
-      if (m.region_code) set.add(m.region_code);
-    });
+    // A verificação `Array.isArray(movement)` já foi feita no `loadMovements`
+    // mas é bom manter aqui para robustez, caso `movement` seja alterado de outra forma.
+    if (Array.isArray(movement)) {
+      movement.forEach((m) => {
+        if (m.region_code) set.add(m.region_code);
+      });
+    }
     return Array.from(set).sort();
   }, [movement]);
 
@@ -94,16 +146,22 @@ export default function Home() {
   // Opções de supplies
   const supplyOptions = useMemo(() => {
     const map = new Map<number, string>();
-    movement.forEach((m) => {
-      if (!map.has(m.supply_id)) {
-        map.set(m.supply_id, m.supply_name);
-      }
-    });
+    if (Array.isArray(movement)) {
+      movement.forEach((m) => {
+        if (!map.has(m.supply_id)) {
+          map.set(m.supply_id, m.supply_name);
+        }
+      });
+    }
     return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
   }, [movement]);
 
   // Aplica filtros
   const filteredMovements = useMemo(() => {
+    if (!Array.isArray(movement)) {
+      return []; // Garante que movement é um array antes de filtrar
+    }
+
     return movement.filter((m) => {
       if (regionFilter !== "GLOBAL" && m.region_code !== regionFilter) {
         return false;
@@ -126,8 +184,8 @@ export default function Home() {
       }
 
       if (
-        selectedSupplies.length > 0 &&
-        !selectedSupplies.includes(m.supply_id)
+          selectedSupplies.length > 0 &&
+          !selectedSupplies.includes(m.supply_id)
       ) {
         return false;
       }
@@ -143,193 +201,193 @@ export default function Home() {
 
   const handleSuppliesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const values = Array.from(e.target.selectedOptions).map((opt) =>
-      Number(opt.value)
+        Number(opt.value)
     );
     setSelectedSupplies(values);
   };
 
   return (
-    <>
-      <PageMeta
-        title="Dashboard | Nexventory"
-        description="Nexventory Application"
-      />
+      <>
+        <PageMeta
+            title="Dashboard | Nexventory"
+            description="Nexventory Application"
+        />
 
-      {/* HEADER COM FILTROS */}
-      <div className="mb-6">
-        {/* Card de Filtros */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#1e1e1e] lg:p-6">
-          {/* Header do Card */}
-          <div className="mb-6">
-            <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-              {t('dashboard.title')}
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {t('dashboard.description')}
-            </p>
-          </div>
-
-          {/* Filtros */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {/* Filtro de Data Inicial */}
-            <div className="flex flex-col">
-              <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                {t('dashboard.startDate')}
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
-              />
-            </div>
-
-            {/* Filtro de Data Final */}
-            <div className="flex flex-col">
-              <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                {t('dashboard.endDate')}
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
-              />
-            </div>
-
-            {/* Filtro de Região (simples) */}
-            <div className="flex flex-col">
-              <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                {t('dashboard.regionFilter')}
-              </label>
-              <select
-                value={regionFilter}
-                onChange={(e) =>
-                  setRegionFilter(
-                    e.target.value === "GLOBAL" ? "GLOBAL" : e.target.value
-                  )
-                }
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
-              >
-                <option value="GLOBAL">{t('dashboard.global')}</option>
-                {regionCodes.map((code) => (
-                  <option key={code} value={code}>
-                    {code}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Multi-select de Regiões */}
-            <div className="flex flex-col">
-              <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                {t('dashboard.regionsMulti')}
-              </label>
-              <select
-                multiple
-                value={selectedRegions}
-                onChange={handleRegionsChange}
-                className="min-h-[38px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
-              >
-                {multiRegionOptions.map((code) => (
-                  <option key={code} value={code}>
-                    {code}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Hold Ctrl/Cmd to select multiple
+        {/* HEADER COM FILTROS */}
+        <div className="mb-6">
+          {/* Card de Filtros */}
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#1e1e1e] lg:p-6">
+            {/* Header do Card */}
+            <div className="mb-6">
+              <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">
+                {t('dashboard.title')}
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {t('dashboard.description')}
               </p>
             </div>
 
-            {/* Multi-select de Supplies */}
-            <div className="flex flex-col">
-              <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                {t('dashboard.supplies')}
-              </label>
-              <select
-                multiple
-                value={selectedSupplies.map(String)}
-                onChange={handleSuppliesChange}
-                className="min-h-[38px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+            {/* Filtros */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {/* Filtro de Data Inicial */}
+              <div className="flex flex-col">
+                <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('dashboard.startDate')}
+                </label>
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+                />
+              </div>
+
+              {/* Filtro de Data Final */}
+              <div className="flex flex-col">
+                <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('dashboard.endDate')}
+                </label>
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+                />
+              </div>
+
+              {/* Filtro de Região (simples) */}
+              <div className="flex flex-col">
+                <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('dashboard.regionFilter')}
+                </label>
+                <select
+                    value={regionFilter}
+                    onChange={(e) =>
+                        setRegionFilter(
+                            e.target.value === "GLOBAL" ? "GLOBAL" : e.target.value
+                        )
+                    }
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+                >
+                  <option value="GLOBAL">{t('dashboard.global')}</option>
+                  {regionCodes.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Multi-select de Regiões */}
+              <div className="flex flex-col">
+                <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('dashboard.regionsMulti')}
+                </label>
+                <select
+                    multiple
+                    value={selectedRegions}
+                    onChange={handleRegionsChange}
+                    className="min-h-[38px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+                >
+                  {multiRegionOptions.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Hold Ctrl/Cmd to select multiple
+                </p>
+              </div>
+
+              {/* Multi-select de Supplies */}
+              <div className="flex flex-col">
+                <label className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('dashboard.supplies')}
+                </label>
+                <select
+                    multiple
+                    value={selectedSupplies.map(String)}
+                    onChange={handleSuppliesChange}
+                    className="min-h-[38px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400"
+                >
+                  {supplyOptions.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Hold Ctrl/Cmd to select multiple
+                </p>
+              </div>
+            </div>
+
+            {/* Botão de Limpar Filtros (opcional) */}
+            <div className="mt-4 flex justify-end">
+              <button
+                  onClick={() => {
+                    setStartDate("");
+                    setEndDate("");
+                    setRegionFilter("GLOBAL");
+                    setSelectedRegions([]);
+                    setSelectedSupplies([]);
+                  }}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                {supplyOptions.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Hold Ctrl/Cmd to select multiple
-              </p>
+                {t("common.clear_filter")}
+              </button>
             </div>
           </div>
+        </div>
 
-          {/* Botão de Limpar Filtros (opcional) */}
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={() => {
-                setStartDate("");
-                setEndDate("");
-                setRegionFilter("GLOBAL");
-                setSelectedRegions([]);
-                setSelectedSupplies([]);
-              }}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+
+        {/* Loading / Erro */}
+        {loading && (
+            <div className="flex items-center justify-center p-8">
+              <div className="text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  {t('dashboard.loadingMovements')}
+                </p>
+              </div>
+            </div>
+        )}
+
+        {error && (
+            <div
+                className="mb-4 p-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                role="alert"
             >
-              {t("common.clear_filter")}
-            </button>
-          </div>
-        </div>
-      </div>
+              <strong className="font-semibold">{t('common.error')}: </strong>
+              {error}
+            </div>
+        )}
 
+        {!loading && !error && (
+            <div className="grid grid-cols-12 gap-4 md:gap-6">
+              <div className="col-span-12 space-y-6 xl:col-span-7">
+                {/*<EcommerceMetrics data={filteredMovements} regionFilter={regionFilter} />*/}
+                {/*<MonthlySalesChart data={filteredMovements} regionFilter={regionFilter} />*/}
+              </div>
 
-      {/* Loading / Erro */}
-      {loading && (
-        <div className="flex items-center justify-center p-8">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {t('dashboard.loadingMovements')}
-            </p>
-          </div>
-        </div>
-      )}
+              <div className="col-span-12 xl:col-span-5">
+                {/*<MonthlyTarget data={filteredMovements} regionFilter={regionFilter} />*/}
+              </div>
 
-      {error && (
-        <div
-          className="mb-4 p-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
-          role="alert"
-        >
-          <strong className="font-semibold">{t('common.error')}: </strong>
-          {error}
-        </div>
-      )}
+              <div className="col-span-12">
+                {/*<StatisticsChart data={filteredMovements} regionFilter={regionFilter} />*/}
+              </div>
 
-      {!loading && !error && (
-        <div className="grid grid-cols-12 gap-4 md:gap-6">
-          <div className="col-span-12 space-y-6 xl:col-span-7">
-            <EcommerceMetrics data={filteredMovements} regionFilter={regionFilter} />
-            <MonthlySalesChart data={filteredMovements} regionFilter={regionFilter} />
-          </div>
+              <div className="col-span-12 xl:col-span-5">
+                {/*<DemographicCard data={filteredMovements} regionFilter={regionFilter}/>*/}
+              </div>
 
-          <div className="col-span-12 xl:col-span-5">
-            <MonthlyTarget data={filteredMovements} regionFilter={regionFilter} />
-          </div>
-
-          <div className="col-span-12">
-            <StatisticsChart data={filteredMovements} regionFilter={regionFilter} />
-          </div>
-
-          <div className="col-span-12 xl:col-span-5">
-            <DemographicCard data={filteredMovements} regionFilter={regionFilter}/>
-          </div>
-
-          <div className="col-span-12 xl:col-span-7">
-            <RecentOrders />
-          </div>
-        </div>
-      )}
-    </>
+              <div className="col-span-12 xl:col-span-7">
+                {/*<RecentOrders />*/}
+              </div>
+            </div>
+        )}
+      </>
   );
 }

@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 // import { DropdownItem } from "../ui/dropdown/DropdownItem";
 // import { MoreDotIcon } from "../../assets/icons";
 import CountryMap from "./CountryMap";
-import type { RegionAPI } from "../Regions/RegionFormModal";
+import type { RegionAPI } from "../../pages/Region/Form/RegionFormModal.tsx";
 import type { TransactionResponse } from "../tables/SupplyList/ConsumptionsTable";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";

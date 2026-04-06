@@ -70,21 +70,24 @@ export interface UserPreferences {
 }
 
 export interface UserDetail {
-  id: string;
+  id: string; // Assumindo UUID agora
   username: string;
   email: string;
   first_name: string;
   last_name: string;
+  phone?: string;
   role: string;
-  created_by: string | null;
+  is_active: boolean;
+  created_by: string;
   created_at: string;
-  last_password_reset_date: string | null;
+  last_password_reset_date: string;
+  is_not_temporary: boolean;
   account_non_expired: boolean;
   account_non_locked: boolean;
   credentials_non_expired: boolean;
-  regions: string[];
-  permissions: string[];
-  preferences: UserPreferences;
-  active: boolean;
-  not_temporary: boolean;
+  regions: string[]; // Códigos das regiões
+  permissions: string[]; // Nomes das permissões
+  profile_picture_url?: string;
+  two_factor_enabled: boolean; // <-- Adicionado
+  two_factor_secret_configured: boolean; // <-- Adicionado (se o backend retornar)
 }

@@ -9,4 +9,5 @@ export const API_ENDPOINTS = {
   permission: `${API_BASE}/api/v2/permission`,
   preferences: `${API_BASE}/api/v2/preferences`,
   notifications: `${API_BASE}/api/v2/notifications`,
+  upload: `${API_BASE}/api/v2/upload`, // Adicionado o endpoint de upload
 };

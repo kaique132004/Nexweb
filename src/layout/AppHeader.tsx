@@ -38,7 +38,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onCommand }) => {
   };
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: KeyboardEvent) => { // Use o tipo global KeyboardEvent
       // ⌘+K ou Ctrl+K focam o input
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();

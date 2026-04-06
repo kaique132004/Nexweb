@@ -25,6 +25,7 @@ export type UserSession = {
   name: string;
   role: string;
   username: string;
+  twoFactorEnabled?: boolean;
 };
 
 interface UserContextType {

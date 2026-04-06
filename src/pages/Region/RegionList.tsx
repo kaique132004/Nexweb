@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import ComponentCard from "../../components/common/ComponentCard";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import RegionTable from "../../components/tables/RegionList/RegionTable";
-import Button from "../../components/ui/button/Button";
-import type { RegionAPI } from "../../components/Regions/RegionFormModal";
-import RegionFormModal from "../../components/Regions/RegionFormModal";
+import ComponentCard from "../../components/common/ComponentCard.tsx";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb.tsx";
+import PageMeta from "../../components/common/PageMeta.tsx";
+import RegionTable from "./Table/RegionTable.tsx";
+import Button from "../../components/ui/button/Button.tsx";
+import type { Region } from "./Table/RegionTable.tsx";
+import RegionFormModal from "./Form/RegionFormModal.tsx";
+// import { useTranslation } from "react-i18next"; // REMOVIDO
 
 export default function RegionList() {
+    // const { t } = useTranslation(); // REMOVIDO
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingRegion, setEditingRegion] = useState<RegionAPI | any>(null);
-
+    const [editingRegion, setEditingRegion] = useState<Region | null>(null);
+    const [refreshTable, setRefreshTable] = useState(0); // Estado para forçar o refetch da tabela
 
     const openCreate = () => {
         setEditingRegion(null);
@@ -20,7 +22,14 @@ export default function RegionList() {
 
     const handleSaved = () => {
         setIsFormOpen(false);
+        setRefreshTable(prev => prev + 1); // Incrementa para forçar o refetch na tabela
     }
+
+    const handleEditRegion = (region: Region) => {
+        setEditingRegion(region);
+        setIsFormOpen(true);
+    };
+
     return (
         <>
             <PageMeta title="Region List | Nexventory" description="Page of Region" />
@@ -39,18 +48,15 @@ export default function RegionList() {
                     </Button>
                 }>
                 <RegionTable
-                    onEditRegion={(region: any) => {
-                        setEditingRegion(region);
-                        setIsFormOpen(true);
-                    }}
+                    onEditRegion={handleEditRegion}
+                    refreshTrigger={refreshTable} // Passa o trigger para a tabela
                 />
             </ComponentCard>
 
-            {/* Modal de Region */}
-            <RegionFormModal 
+            <RegionFormModal
                 isOpen={isFormOpen}
                 closeModal={() => setIsFormOpen(false)}
-                region={editingRegion}      // 🔥 se null => create, se tiver region => edit
+                region={editingRegion}
                 onSaved={handleSaved}
             />
         </>
