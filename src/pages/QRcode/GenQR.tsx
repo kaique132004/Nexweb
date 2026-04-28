@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import Label from "../../components/form/Label";
+import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb";
+import PageMeta from "../../shared/components/common/PageMeta";
+import Label from "../../shared/components/form/Label.tsx";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
 import Button from "../../components/ui/button/Button";

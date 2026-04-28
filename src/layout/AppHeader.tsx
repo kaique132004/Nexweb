@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
-import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
-import UserDropdown from "../components/header/UserDropdown";
-import NotificationDropdown from "../components/header/NotificationDropdown";
+import { ThemeToggleButton } from "../shared/components/common/ThemeToggleButton";
+import UserDropdown from "../shared/components/header/UserDropdown";
+import NotificationDropdown from "../shared/components/header/NotificationDropdown";
 
 export type ParsedCommand = {
   qty?: number;               // /adm 120

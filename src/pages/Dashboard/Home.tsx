@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTranslation } from 'react-i18next';
-import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
-import PageMeta from "../../components/common/PageMeta";
+import EcommerceMetrics from "../../shared/components/ecommerce/EcommerceMetrics";
+import MonthlySalesChart from "../../shared/components/ecommerce/MonthlySalesChart";
+import StatisticsChart from "../../shared/components/ecommerce/StatisticsChart";
+import MonthlyTarget from "../../shared/components/ecommerce/MonthlyTarget";
+import RecentOrders from "../../shared/components/ecommerce/RecentOrders";
+import DemographicCard from "../../shared/components/ecommerce/DemographicCard";
+import PageMeta from "../../shared/components/common/PageMeta";
 import { useEffect, useMemo, useState, useCallback } from "react"; // Adicionado useCallback
 import { API_ENDPOINTS } from "../../api/endpoint";
 import { authFetch, AuthFetchError } from "../../api/apiAuth";

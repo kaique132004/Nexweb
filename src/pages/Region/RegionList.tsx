@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import ComponentCard from "../../components/common/ComponentCard.tsx";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb.tsx";
-import PageMeta from "../../components/common/PageMeta.tsx";
+import ComponentCard from "../../shared/components/common/ComponentCard.tsx";
+import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb.tsx";
+import PageMeta from "../../shared/components/common/PageMeta.tsx";
 import RegionTable from "./Table/RegionTable.tsx";
 import Button from "../../components/ui/button/Button.tsx";
 import type { Region } from "./Table/RegionTable.tsx";

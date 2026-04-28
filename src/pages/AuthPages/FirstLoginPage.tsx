@@ -1,5 +1,5 @@
-import FirstLogin from "../../components/auth/FirstLogin";
-import PageMeta from "../../components/common/PageMeta";
+import FirstLogin from "../../shared/components/auth/FirstLogin";
+import PageMeta from "../../shared/components/common/PageMeta";
 import AuthLayout from "./AuthPageLayout";
 
 export default function FirstLoginPage() {

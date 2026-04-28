@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { TransactionFilters } from "../List/TransactionList";
+import type { TransactionFilters } from "./TransactionList.tsx";
 import Button from "../../components/ui/button/Button";
 
 interface TransactionFilterModalProps {

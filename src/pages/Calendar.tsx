@@ -10,7 +10,7 @@ import type {
 } from "@fullcalendar/core";
 import { Modal } from "../components/ui/modal";
 import { useModal } from "../hooks/useModal";
-import PageMeta from "../components/common/PageMeta";
+import PageMeta from "../shared/components/common/PageMeta";
 import { authFetch } from "../api/apiAuth";
 import { API_ENDPOINTS } from "../api/endpoint";
 

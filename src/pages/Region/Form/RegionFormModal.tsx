@@ -6,8 +6,8 @@ import type { Region } from "../Table/RegionTable.tsx";
 import { authFetch, AuthFetchError } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
 import { Modal } from "../../../components/ui/modal";
-import Label from "../../../components/form/Label.tsx";
-import Input from "../../../components/form/input/InputField.tsx";
+import Label from "../../../shared/components/form/Label.tsx";
+import Input from "../../../shared/components/form/input/InputField.tsx";
 import Button from "../../../components/ui/button/Button.tsx";
 // import { useTranslation } from 'react-i18next'; // REMOVIDO
 
@@ -63,22 +63,22 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
     try {
       // Ajuste para enviar apenas os campos necessários para a API
       const payload = {
-        regionCode: formData.region_code,
-        regionName: formData.region_name,
-        cityName: formData.city_name,
-        countryName: formData.country_name,
-        addressCode: formData.address_code,
-        stateName: formData.state_name,
-        responsibleName: formData.responsible_name,
-        isActive: formData.is_active,
-        containsAgentsLocal: formData.contains_agents_local,
+        region_code: formData.region_code,
+        region_name: formData.region_name,
+        city_name: formData.city_name,
+        country_name: formData.country_name,
+        address_code: formData.address_code,
+        state_name: formData.state_name,
+        responsible_name: formData.responsible_name,
+        is_active: formData.is_active,
+        contains_agents_local: formData.contains_agents_local,
         longitude: formData.longitude,
         latitude: formData.latitude,
-        minStockAlert: formData.min_stock_alert,
+        min_stock_alert: formData.min_stock_alert,
       };
 
-      if (region && region.id) {
-        await authFetch(`${API_ENDPOINTS.region}/${region.id}`, {
+      if (region && region.region_code) {
+        await authFetch(`${API_ENDPOINTS.region}/${region.region_code}`, {
           method: 'PUT',
           body: JSON.stringify(payload),
           headers: { 'Content-Type': 'application/json' },
@@ -134,8 +134,8 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
                     value={formData.region_code || ''}
                     onChange={(e) => handleInputChange('region_code', e.target.value)}
                     placeholder="e.g., GRU, SFO"
+                    disabled={region !== null} // Código não pode ser editado após criação
                     required
-                    disabled={saving || (region && !!region.id)}
                 />
               </div>
               <div className="mb-4">

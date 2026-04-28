@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import Label from "../form/Label";
+import Label from "../../shared/components/form/Label.tsx";
 import { authFetch, AuthFetchError } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
 

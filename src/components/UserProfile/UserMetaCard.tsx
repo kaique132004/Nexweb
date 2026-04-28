@@ -5,8 +5,8 @@ import { useState, useEffect, useRef } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
+import Input from "../../shared/components/form/input/InputField";
+import Label from "../../shared/components/form/Label.tsx";
 import { authFetch, AuthFetchError } from "../../api/apiAuth"; // Mantenha authFetch para dados de texto
 import { uploadProfilePicture, deleteProfilePicture, ImageUploadError } from "../../api/imageUpload"; // Importe as novas funções
 import { API_ENDPOINTS } from "../../api/endpoint";

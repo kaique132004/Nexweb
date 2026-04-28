@@ -1,10 +1,10 @@
 // pages/UserProfiles.tsx
 
-import PageBreadcrumb from "../components/common/PageBreadCrumb";
+import PageBreadcrumb from "../shared/components/common/PageBreadCrumb";
 import UserMetaCard from "../components/UserProfile/UserMetaCard";
 import UserInfoCard from "../components/UserProfile/UserInfoCard";
 import UserAddressCard from "../components/UserProfile/UserAddressCard";
-import PageMeta from "../components/common/PageMeta";
+import PageMeta from "../shared/components/common/PageMeta";
 
 export default function UserProfiles() {
     // Certifique-se de que userSession.id é um string (UUID)

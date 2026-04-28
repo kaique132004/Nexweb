@@ -1,8 +1,8 @@
 // pages/TwoFactorAuthPage.tsx
 
 import AuthLayout from "./AuthPageLayout";
-import PageMeta from "../../components/common/PageMeta.tsx";
-import TwoFactorAuthForm from "../../components/auth/TwoFactorAuthForm.tsx";
+import PageMeta from "../../shared/components/common/PageMeta.tsx";
+import TwoFactorAuthForm from "../../shared/components/auth/TwoFactorAuthForm.tsx";
 
 export default function TwoFactorAuthPage() {
     return (

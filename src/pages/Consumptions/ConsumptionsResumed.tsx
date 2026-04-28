@@ -1,10 +1,10 @@
 'use client'
 import React, { useEffect, useState, useMemo } from "react";
-import PageMeta from "../../components/common/PageMeta";
+import PageMeta from "../../shared/components/common/PageMeta";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
-import Label from "../../components/form/Label";
-import Input from "../../components/form/input/InputField";
+import Label from "../../shared/components/form/Label.tsx";
+import Input from "../../shared/components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 
 interface RegionalPrice {
