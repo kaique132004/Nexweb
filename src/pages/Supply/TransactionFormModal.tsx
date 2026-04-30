@@ -7,6 +7,7 @@ import Input from "../../shared/components/form/input/InputField.tsx";
 import Button from "../../components/ui/button/Button.tsx";
 import type { TransactionResponse } from "../Consumptions/ConsumptionsTable.tsx";
 import { useTranslation } from "react-i18next";
+import Select from "../../shared/components/form/Select.tsx";
 
 interface RegionalPrice {
   id: number;
@@ -106,7 +107,6 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
         setLoadingRefs(true);
         setError(null);
 
-        // Extrai o array independente do formato de resposta
         const suppliesRes = await authFetch<any>(`${API_ENDPOINTS.supply}/list`);
         const suppliesList: SupplyOption[] = Array.isArray(suppliesRes)
             ? suppliesRes
@@ -121,7 +121,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
             return {
               supply_id: String(transaction.supply_name),
               region_id: String(transaction.region_code),
-              quantity_amended: String(transaction.quantity_amended),
+              quantity_amended: String(transaction.quantity),
               type_entry: transaction.type_entry ?? "",
               obs_alter: transaction.obs_alter ?? "",
               created: transaction.created
@@ -244,6 +244,11 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
           ? t("movements.form_save_changes")
           : t("movements.form_save");
 
+  const options = [
+    { value: "OUT", label: "Decrease" },
+    { value: "IN", label: "Increase" },
+  ];
+
   return (
       <Modal isOpen={isOpen} onClose={handleClose} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-[#1e1e1e] lg:p-11">
@@ -268,22 +273,21 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
                   {/* Supply */}
                   <div className="col-span-2 lg:col-span-1">
                     <Label>{t("movements.form_supply_movement")}</Label>
-                    <select
-                        className={`w-full rounded-md border p-2 text-sm dark:text-white outline-none bg-transparent ${
-                            fieldErrors.supply_id ? "border-red-500" : "border-slate-600"
-                        }`}
-                        value={form.supply_id}
-                        onChange={handleTextChange("supply_id")}
-                        disabled={loadingRefs || saving || isEditMode}
-                    >
-                      <option value="">{t("movements.form_supply_movement_placeholder")}</option>
-                      {supplies.map((s) => (
-                          // value como string para bater com form.supply_id
-                          <option key={s.id} value={String(s.id)} className="bg-slate-900 dark:text-white">
-                            {s.supply_name}
-                          </option>
-                      ))}
-                    </select>
+                    <Select
+                        options={supplies.map((s) => ({
+                          value: String(s.id),
+                          label: `${s.supply_name}`,
+                        }))}
+                        placeholder="Select supply"
+                        onChange={(value) => {
+                          const fakeEvent = {
+                            target: {value},
+                          } as React.ChangeEvent<HTMLSelectElement>;
+                          handleTextChange("supply_id")(fakeEvent);
+                        }}
+
+                    />
+
                     {fieldErrors.supply_id && (
                         <p className="mt-1 text-xs text-red-500">{fieldErrors.supply_id}</p>
                     )}
@@ -292,26 +296,15 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
                   {/* Region */}
                   <div className="col-span-2 lg:col-span-1">
                     <Label>{t("movements.form_region_movement")}</Label>
-                    <select
-                        className={`w-full rounded-md border p-2 text-sm dark:text-white outline-none bg-transparent ${
-                            fieldErrors.region_id ? "border-red-500" : "border-slate-600"
-                        }`}
-                        value={form.region_id}
-                        onChange={handleTextChange("region_id")}
-                        disabled={loadingRefs || saving || isEditMode || !form.supply_id}
-                    >
-                      <option value="">
-                        {!form.supply_id
-                            ? t("movements.form_supply_first") || "Select supply first"
-                            : t("movements.form_region_movement_placeholder")}
-                      </option>
-                      {availableRegions.map((r) => (
-                          // value já é string (convertido no useMemo)
-                          <option key={r.id} value={r.id} className="bg-slate-900 dark:text-white">
-                            {r.region_code}
-                          </option>
-                      ))}
-                    </select>
+                    <Select options={availableRegions.map((r) => ({
+                      value: String(r.id),
+                      label: `${r.region_code}`,
+                    }))} onChange={(value) => {
+                      const fakeEvent = {
+                        target: {value},
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleTextChange("region_id")(fakeEvent);
+                    }} />
                     {fieldErrors.region_id && (
                         <p className="mt-1 text-xs text-red-500">{fieldErrors.region_id}</p>
                     )}
@@ -340,22 +333,13 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
                   {/* Type Entry */}
                   <div className="col-span-2 lg:col-span-1">
                     <Label>{t("movements.form_type_movement")}</Label>
-                    <select
-                        className={`w-full rounded-md border p-2 text-sm dark:text-white outline-none bg-transparent ${
-                            fieldErrors.type_entry ? "border-red-500" : "border-slate-600"
-                        }`}
-                        value={form.type_entry}
-                        onChange={handleTextChange("type_entry")}
-                        disabled={saving}
-                    >
-                      <option value="">{t("movements.form_type_movement_placeholder")}</option>
-                      <option value="IN" className="bg-slate-900 dark:text-white">
-                        {t("movements.form_type_movement_add")}
-                      </option>
-                      <option value="OUT" className="bg-slate-900 dark:text-white">
-                        {t("movements.form_type_movement_out")}
-                      </option>
-                    </select>
+                    <Select options={options} onChange={(value) => {
+                      const fakeEvent = {
+                        target: {value},
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleTextChange("type_entry")(fakeEvent);
+                    }} />
+                    
                     {fieldErrors.type_entry && (
                         <p className="mt-1 text-xs text-red-500">{fieldErrors.type_entry}</p>
                     )}
@@ -364,6 +348,7 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
                   {/* Created */}
                   <div className="col-span-2 lg:col-span-1">
                     <Label>{t("movements.form_date_movement")}</Label>
+
                     <input
                         type="datetime-local"
                         className="w-full rounded-md border border-slate-600 bg-transparent p-2 text-sm dark:text-white outline-none"

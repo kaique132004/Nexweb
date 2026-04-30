@@ -7,6 +7,7 @@ import Label from "../../shared/components/form/Label.tsx";
 import Input from "../../shared/components/form/input/InputField.tsx";
 import Button from "../../components/ui/button/Button.tsx";
 import type { SupplyList } from "./SuppliesTable.tsx";
+import Select from "../../shared/components/form/Select.tsx";
 
 export interface RegionAPI {
     id: string;
@@ -288,22 +289,20 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                                             {/* Region */}
                                             <div className="lg:col-span-2">
                                                 <Label>Region</Label>
-                                                <select
-                                                    className="w-full rounded-md border border-slate-600 bg-transparent p-2 text-sm dark:text-white outline-none"
-                                                    value={selectedRegion?.id ?? ""}
-                                                    onChange={handleRegionChange(index)}
-                                                >
-                                                    <option value="">Select a region</option>
-                                                    {regions.map((region) => (
-                                                        <option
-                                                            key={region.id}
-                                                            value={region.id}
-                                                            className="bg-slate-900 dark:text-white"
-                                                        >
-                                                            {region.region_code} - {region.region_name}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <Select
+                                                    options={regions.map((region) => ({
+                                                        value: String(region.id),
+                                                        label: `${region.region_code} - ${region.region_name}`,
+                                                    }))}
+                                                    placeholder="Select a region"
+                                                    onChange={(value) => {
+                                                        const fakeEvent = {
+                                                            target: { value },
+                                                        } as React.ChangeEvent<HTMLSelectElement>;
+                                                        handleRegionChange(index)(fakeEvent);
+                                                    }}
+                                                    className="dark:bg-dark-900"
+                                                />
                                             </div>
 
                                             {/* Currency */}
