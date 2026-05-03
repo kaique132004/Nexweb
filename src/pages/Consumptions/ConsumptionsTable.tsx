@@ -1,32 +1,10 @@
 import { useMemo } from "react";
-import { DataTable } from "../../components/ui/table/DataTable";
-import type { ColumnDef, ContextMenuAction } from "../../components/ui/table/DataTable";
-import Badge from "../../components/ui/badge/Badge.tsx";
+import { DataTable } from "../../shared/components/ui/table/DataTable";
+import type { ColumnDef, ContextMenuAction } from "../../shared/components/ui/table/DataTable";
+import Badge from "../../shared/components/ui/badge/Badge.tsx";
 import { API_ENDPOINTS } from "../../api/endpoint.ts";
-
-export interface TransactionResponse {
-  id: number;
-  username: string;
-  supply_name: string;
-  quantity: number;
-  quantity_before: number;
-  quantity_after: number;
-  created: string;
-  region_code: string;
-  price_unit: number;
-  total_price: number;
-  type_entry: string;
-  obs_alter: string;
-}
-
-export interface TransactionFilters {
-  startDate?: string;
-  endDate?: string;
-  regionCode?: string;
-  supplyName?: string;
-  typeEntry?: string;
-  username?: string;
-}
+import type {TransactionFilters, TransactionResponse} from "../../shared/types/transaction.ts";
+import {formatDate} from "../../shared/utils/date.ts";
 
 interface ConsumptionsTableProps {
   filters?: TransactionFilters;
@@ -35,13 +13,6 @@ interface ConsumptionsTableProps {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const formatDateTime = (value: string) => {
-  if (!value) return "-";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleString();
-};
 
 const formatNumber = (value: number | null | undefined, decimals = 0) => {
   if (value === null || value === undefined) return "-";
@@ -151,10 +122,10 @@ export default function ConsumptionsTable({
       render: (tx) => tx.obs_alter || "-",
     },
     {
-      key: "created",
+      key: "created_at",
       label: "Date",
       className: "px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap",
-      render: (tx) => formatDateTime(tx.created),
+      render: (tx) => formatDate(tx.created_at),
     },
   ];
 

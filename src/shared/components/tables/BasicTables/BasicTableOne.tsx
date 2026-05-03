@@ -4,8 +4,8 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../../components/ui/table";
-import Badge from "../../../../components/ui/badge/Badge.tsx";
+} from "../../ui/table";
+import Badge from "../../ui/badge/Badge.tsx";
 import { useTranslation } from "react-i18next";
 import { usePaginatedData } from "../../../../hooks/usePaginatedData.ts"; // Importe o hook e a interface
 
@@ -40,8 +40,7 @@ export default function BasicTableOne() {
     totalElements,
     totalPages,
     setCurrentPage,
-    setPageSize,
-    refetch, // Se precisar de um botão para recarregar
+    setPageSize,// Se precisar de um botão para recarregar
   } = usePaginatedData<Order>("/api/v2/example-orders", [], { initialPageSize: 5 }); // Endpoint de exemplo, ajuste conforme necessário
 
   // Handlers de paginação

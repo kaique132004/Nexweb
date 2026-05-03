@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Dropdown } from "../../../components/ui/dropdown/Dropdown.tsx";
-import { DropdownItem } from "../../../components/ui/dropdown/DropdownItem.tsx";
+import { Dropdown } from "../ui/dropdown/Dropdown.tsx";
+import { DropdownItem } from "../ui/dropdown/DropdownItem.tsx";
 import { Link } from "react-router";
 import { ptBR, enUS } from "date-fns/locale";
 import { useNotifications } from "../../../context/NotificationContext.tsx";

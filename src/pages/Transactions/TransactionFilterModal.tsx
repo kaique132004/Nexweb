@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import type { TransactionFilters } from "./TransactionList.tsx";
-import Button from "../../components/ui/button/Button";
+import Button from "../../shared/components/ui/button/Button";
+import type {TransactionFilters} from "../../shared/types/transaction.ts";
 
 interface TransactionFilterModalProps {
   isOpen: boolean;

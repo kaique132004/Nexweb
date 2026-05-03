@@ -1,47 +1,30 @@
 import { useState } from "react";
-import { DataTable, type ColumnDef, type ContextMenuAction } from "../../components/ui/table/DataTable";
-import { API_ENDPOINTS } from "../../api/endpoint.ts";
-import Badge from "../../components/ui/badge/Badge.tsx";
-import SupplyRegionalPricesModal from "./SupplyRegionalPricesModal.tsx";
+import { DataTable, type ColumnDef, type ContextMenuAction } from "../../../shared/components/ui/table/DataTable.tsx";
+import { API_ENDPOINTS } from "../../../api/endpoint.ts";
+import Badge from "../../../shared/components/ui/badge/Badge.tsx";
+import SupplyRegionalPricesModal from "../SupplyRegionalPricesModal.tsx";
+import type {SupplyOption} from "../../../shared/types/supply.ts";
+import {formatDate} from "../../../shared/utils/date.ts";
 
 interface SuppliesTableProps {
-    onEditSupply?: (supply: SupplyList) => void;
+    onEditSupply?: (supply: SupplyOption) => void;
     refreshTrigger?: number;
 }
 
-export interface RegionControlSupply {
-    id: string;
-    region_id: number;
-    region_code: string;
-    currency: string;
-    supplier: string;
-    price: number;
-    quantity: number;
-}
-
-export interface SupplyList {
-    id: string;
-    supply_name: string;
-    description: string;
-    regional_prices: RegionControlSupply[];
-    is_active: boolean;
-    created_at: string;
-    supply_images: string[];
-}
 
 export default function SuppliesTable({ onEditSupply, refreshTrigger }: SuppliesTableProps) {
     const [regionalPricesModalOpen, setRegionalPricesModalOpen] = useState(false);
-    const [selectedSupply, setSelectedSupply] = useState<SupplyList | null>(null);
+    const [selectedSupply, setSelectedSupply] = useState<SupplyOption | null>(null);
     const [internalRefresh, setInternalRefresh] = useState(0);
 
-    const handleToggleActive = async (supply: SupplyList) => {
+    const handleToggleActive = async (supply: SupplyOption) => {
         console.log("Toggling active for supply:", supply.id);
         // sua lógica de ativar/desativar aqui
     };
 
     // ─── Colunas ────────────────────────────────────────────────────────────────
 
-    const columns: ColumnDef<SupplyList>[] = [
+    const columns: ColumnDef<SupplyOption>[] = [
         {
             key: "supply_name",
             label: "Supply Name",
@@ -56,7 +39,10 @@ export default function SuppliesTable({ onEditSupply, refreshTrigger }: Supplies
             key: "created_at",
             label: "Created At",
             className: "px-5 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400",
-            render: (supply) => new Date(supply.created_at).toLocaleString(),
+            render: (supply) =>
+                supply.created_at
+                    ? formatDate(supply.created_at)
+                    : "—",
         },
         {
             key: "is_active",
@@ -91,7 +77,7 @@ export default function SuppliesTable({ onEditSupply, refreshTrigger }: Supplies
 
     // ─── Context menu actions ───────────────────────────────────────────────────
 
-    const contextMenuActions: ContextMenuAction<SupplyList>[] = [
+    const contextMenuActions: ContextMenuAction<SupplyOption>[] = [
         {
             label: "Edit Supply",
             onClick: (supply) => onEditSupply?.(supply),
@@ -112,7 +98,7 @@ export default function SuppliesTable({ onEditSupply, refreshTrigger }: Supplies
 
     return (
         <>
-            <DataTable<SupplyList>
+            <DataTable<SupplyOption>
                 endpoint={`${API_ENDPOINTS.supply}/list`}
                 columns={columns}
                 rowKey="id"
@@ -129,7 +115,7 @@ export default function SuppliesTable({ onEditSupply, refreshTrigger }: Supplies
                     setRegionalPricesModalOpen(false);
                     setSelectedSupply(null);
                 }}
-                supplyId={selectedSupply?.id ?? ""}
+                supplyId={selectedSupply?.id ?? 0}
                 initialRegionalPrices={selectedSupply?.regional_prices ?? []}
                 onSaved={() => setInternalRefresh((prev) => prev + 1)}
             />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
 interface Option {
   value: string;
@@ -11,53 +11,62 @@ interface SelectProps {
   onChange: (value: string) => void;
   className?: string;
   defaultValue?: string;
+  value?: string; // ← adiciona prop controlada opcional
 }
 
 const Select: React.FC<SelectProps> = ({
-  options,
-  placeholder = "Select an option",
-  onChange,
-  className = "",
-  defaultValue = "",
-}) => {
-  // Manage the selected value
+                                         options,
+                                         placeholder = "Select an option",
+                                         onChange,
+                                         className = "",
+                                         defaultValue = "",
+                                         value, // ← recebe
+                                       }) => {
   const [selectedValue, setSelectedValue] = useState<string>(defaultValue);
 
+  // Sincroniza estado interno quando value externo muda
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValue(value);
+    }
+  }, [value]);
+
+  // Sincroniza quando defaultValue muda (ex: modal abre com outro user)
+  useEffect(() => {
+    if (value === undefined) {
+      setSelectedValue(defaultValue);
+    }
+  }, [defaultValue]);
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedValue(value);
-    onChange(value); // Trigger parent handler
+    const val = e.target.value;
+    setSelectedValue(val);
+    onChange(val);
   };
 
   return (
-    <select
-      className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
-        selectedValue
-          ? "text-gray-800 dark:text-white/90"
-          : "text-gray-400 dark:text-gray-400"
-      } ${className}`}
-      value={selectedValue}
-      onChange={handleChange}
-    >
-      {/* Placeholder option */}
-      <option
-        value=""
-        disabled
-        className="text-gray-700 dark:bg-[#1e1e1e] dark:text-gray-400"
+      <select
+          className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
+              selectedValue
+                  ? "text-gray-800 dark:text-white/90"
+                  : "text-gray-400 dark:text-gray-400"
+          } ${className}`}
+          value={selectedValue}
+          onChange={handleChange}
       >
-        {placeholder}
-      </option>
-      {/* Map over options */}
-      {options.map((option) => (
-        <option
-          key={option.value}
-          value={option.value}
-          className="text-gray-700 dark:bg-[#1e1e1e] dark:text-gray-400"
-        >
-          {option.label}
+        <option value="" disabled className="text-gray-700 dark:bg-[#1e1e1e] dark:text-gray-400">
+          {placeholder}
         </option>
-      ))}
-    </select>
+        {options.map((option) => (
+            <option
+                key={option.value}
+                value={option.value}
+                className="text-gray-700 dark:bg-[#1e1e1e] dark:text-gray-400"
+            >
+              {option.label}
+            </option>
+        ))}
+      </select>
   );
 };
 

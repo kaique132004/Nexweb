@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import type { SupplyList } from "../SuppliesTable.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
-import { Modal } from "../../../components/ui/modal";
+import { Modal } from "../../../shared/components/ui/modal";
 import Label from "../../../shared/components/form/Label.tsx";
 import Input from "../../../shared/components/form/input/InputField.tsx";
-import Button from "../../../components/ui/button/Button.tsx";
+import Button from "../../../shared/components/ui/button/Button.tsx";
+import type {SupplyOption} from "../../../shared/types/supply.ts";
 
 interface SupplyFormModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  supply?: SupplyList | null;
-  onSaved?: (supply?: SupplyList) => void;
+  supply?: SupplyOption | null;
+  onSaved?: (supply?: SupplyOption) => void;
 }
 
 interface SupplyFormPayload {
@@ -47,7 +47,7 @@ const SupplyFormModal: React.FC<SupplyFormModalProps> = ({
         supply_name: supply.supply_name ?? "",
         description: supply.description ?? "",
         is_active: supply.is_active ?? true,
-        supply_images: supply.supply_images ?? [],
+        supply_images: supply.supply_image ?? [],
       });
     } else {
       setForm({
@@ -80,11 +80,11 @@ const SupplyFormModal: React.FC<SupplyFormModalProps> = ({
 
       const payload: any = { ...form };
 
-      let saved: SupplyList | undefined;
+      let saved: SupplyOption | undefined;
 
       if (isEditMode && supply) {
         saved =
-          (await authFetch<SupplyList>(
+          (await authFetch<SupplyOption>(
             `${API_ENDPOINTS.supply}/edit/${supply.id}`,
             {
               method: "PUT",
@@ -93,7 +93,7 @@ const SupplyFormModal: React.FC<SupplyFormModalProps> = ({
           )) ?? undefined;
       } else {
         saved =
-          (await authFetch<SupplyList>(`${API_ENDPOINTS.supply}/create`, {
+          (await authFetch<SupplyOption>(`${API_ENDPOINTS.supply}/create`, {
             method: "POST",
             body: JSON.stringify(payload),
           })) ?? undefined;

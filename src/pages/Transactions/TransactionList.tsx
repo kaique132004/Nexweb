@@ -5,34 +5,11 @@ import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb.tsx";
 import PageMeta from "../../shared/components/common/PageMeta.tsx";
 import TransactionFormModal from "../Supply/TransactionFormModal.tsx";
 import TransactionFilterModal from "./TransactionFilterModal.tsx";
-import ConsumptionsTable, {
-  type TransactionResponse,
-} from "../Consumptions/ConsumptionsTable.tsx";
-import Button from "../../components/ui/button/Button.tsx";
+import ConsumptionsTable from "../Consumptions/ConsumptionsTable.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import { authFetchBlob } from "../../api/apiAuth.ts"; // Import da nova função
 import { API_ENDPOINTS } from "../../api/endpoint.ts";
-
-// Interface para os filtros
-export interface TransactionFilters {
-  startDate?: string;
-  endDate?: string;
-  regionCode?: string;
-  supplyName?: string;
-  typeEntry?: string;
-  username?: string;
-}
-
-// Interface para o payload de export
-interface ExportPayload {
-  dateDays?: number;
-  nameSupply?: string[];
-  typeEntry?: string;
-  regionCodes?: string[];
-  quantitySupply?: number;
-  user?: string;
-  startDate?: string;
-  endDate?: string;
-}
+import type {TransactionFilters, ExportPayload, TransactionResponse} from "../../shared/types/transaction.ts";
 
 export default function TransactionList() {
   const [isFormOpen, setIsFormOpen] = useState(false);

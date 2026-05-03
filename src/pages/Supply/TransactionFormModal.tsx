@@ -1,43 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { authFetch } from "../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../api/endpoint.ts";
-import { Modal } from "../../components/ui/modal";
+import { Modal } from "../../shared/components/ui/modal";
 import Label from "../../shared/components/form/Label.tsx";
 import Input from "../../shared/components/form/input/InputField.tsx";
-import Button from "../../components/ui/button/Button.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import type { TransactionResponse } from "../Consumptions/ConsumptionsTable.tsx";
 import { useTranslation } from "react-i18next";
 import Select from "../../shared/components/form/Select.tsx";
-
-interface RegionalPrice {
-  id: number;
-  region_id: number;
-  region_code: string;
-  currency: string;
-  supplier: string;
-  price: number;
-  quantity: number;
-}
-
-interface SupplyOption {
-  id: number;
-  supply_name: string;
-  description: string;
-  regional_prices: RegionalPrice[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  supply_image: string | null;
-}
-
-interface TransactionRequestPayload {
-  supply_id: number;
-  quantity_amended: number;
-  created: string;
-  region_id: number;
-  type_entry: string;
-  obs_alter?: string;
-}
+import type {SupplyOption} from "../../shared/types/supply.ts";
+import type {TransactionRequestPayload} from "../../shared/types/transaction.ts";
 
 interface TransactionRequestModalProps {
   isOpen: boolean;

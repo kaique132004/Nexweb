@@ -5,7 +5,7 @@ import {
   BoxIconLine,
   GroupIcon,
 } from "../../../assets/icons";
-import Badge from "../../../components/ui/badge/Badge.tsx";
+import Badge from "../ui/badge/Badge.tsx";
 
 type Movement = {
   id: number;

@@ -3,11 +3,11 @@ import { useState, useMemo, useEffect } from "react";
 // import { DropdownItem } from "../ui/dropdown/DropdownItem";
 // import { MoreDotIcon } from "../../assets/icons";
 import CountryMap from "./CountryMap.tsx";
-import type { RegionAPI } from "../../../pages/Region/Form/RegionFormModal.tsx";
-import type { TransactionResponse } from "../../../pages/Consumptions/ConsumptionsTable.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
 import { useTranslation } from "react-i18next";
+import type {TransactionResponse} from "../../types/transaction.ts";
+import type {Region} from "../../types/region.ts";
 
 type ViewMode = "GLOBAL" | "REGIONAL";
 
@@ -30,24 +30,25 @@ export default function DemographicCard({
   // const [isOpen, setIsOpen] = useState(false);
   const [viewMode] = useState<ViewMode>("GLOBAL");
   const [selectedCountry] = useState<string | "GLOBAL">("GLOBAL");
-  const [regions, setRegions] = useState<RegionAPI[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
   const {t} = useTranslation();
 
   // Buscar regiões ao montar o componente
-  useEffect(() => {
-    const fetchRegions = async () => {
-      try {
-        const response = await authFetch<RegionAPI[]>(`${API_ENDPOINTS.region}`);
-        if (response) {
-          const regionsData = await response;
-          setRegions(regionsData);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar regiões:", error);
-      }
-    };
-    fetchRegions();
-  }, []);
+    useEffect(() => {
+        const fetchRegions = async () => {
+            try {
+                const response = await authFetch<{ content: Region[] }>(
+                    `${API_ENDPOINTS.region}?page=0&size=999`
+                );
+                if (response?.content) {
+                    setRegions(response.content); // ← extrai o array
+                }
+            } catch (error) {
+                console.error("Erro ao buscar regiões:", error);
+            }
+        };
+        fetchRegions();
+    }, []);
 
   // Filtrar transações
   const transactions = useMemo(() => {
@@ -73,7 +74,7 @@ export default function DemographicCard({
 
   // Mapa rápido de region_code -> RegionAPI
   const regionByCode = useMemo(() => {
-    const map = new Map<string, RegionAPI>();
+    const map = new Map<string, Region>();
     regions.forEach((r) => {
       if (r.region_code) {
         map.set(r.region_code, r);
@@ -103,7 +104,7 @@ export default function DemographicCard({
 
           const id = region.country_name;
           const prev = grouped.get(id)?.quantity ?? 0;
-          const qtyToAdd = tx.quantity_amended ?? 0;
+          const qtyToAdd = tx.quantity ?? 0;
 
           grouped.set(id, {
             label: region.country_name,
@@ -129,7 +130,7 @@ export default function DemographicCard({
           const id = region.region_code;
           const label = region.city_name || region.region_code;
           const prev = grouped.get(id)?.quantity ?? 0;
-          const qtyToAdd = tx.quantity_amended ?? 0;
+          const qtyToAdd = tx.quantity ?? 0;
 
           grouped.set(id, {
             label,

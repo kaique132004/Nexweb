@@ -1,8 +1,8 @@
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 import { useMemo, useState } from "react";
-import { Dropdown } from "../../../components/ui/dropdown/Dropdown.tsx";
-import { DropdownItem } from "../../../components/ui/dropdown/DropdownItem.tsx";
+import { Dropdown } from "../ui/dropdown/Dropdown.tsx";
+import { DropdownItem } from "../ui/dropdown/DropdownItem.tsx";
 import { MoreDotIcon } from "../../../assets/icons";
 import { useTranslation } from "react-i18next";
 
@@ -11,7 +11,7 @@ type Movement = {
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity_amended: number;
+  quantity: number;
   quantity_before: number;
   quantity_after: number;
   created: string;
@@ -64,11 +64,11 @@ export default function MonthlyTarget({
       const isPrevious = isPrevSameYear || isPrevDecLastYear;
 
       if (isCurrent) {
-        current += item.quantity_amended;
+        current += item.quantity;
       }
 
       if (isPrevious) {
-        previous += item.quantity_amended;
+        previous += item.quantity;
       }
     });
 

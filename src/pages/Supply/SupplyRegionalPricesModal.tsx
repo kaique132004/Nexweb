@@ -2,66 +2,18 @@
 import React, { useEffect, useState } from "react";
 import { authFetch } from "../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../api/endpoint.ts";
-import { Modal } from "../../components/ui/modal";
+import { Modal } from "../../shared/components/ui/modal";
 import Label from "../../shared/components/form/Label.tsx";
 import Input from "../../shared/components/form/input/InputField.tsx";
-import Button from "../../components/ui/button/Button.tsx";
-import type { SupplyList } from "./SuppliesTable.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import Select from "../../shared/components/form/Select.tsx";
-
-export interface RegionAPI {
-    id: string;
-    region_code: string;
-    region_name: string;
-    city_name: string;
-    country_name: string;
-    state_name: string;
-    address_code: string;
-    responsible_name: string;
-    is_active: boolean;
-    contains_agents_local: boolean;
-    latitude: number | null;   // era string | null, mas o JSON retorna number
-    longitude: number | null;  // idem
-    min_stock_alert?: number;
-    created_by?: string;
-    created_at?: string;
-}
-
-interface SupplyRequestSnake {
-  id: string;
-  supply_name: string;
-  description: string;
-  is_active: boolean;
-  supply_image: string[];
-  regional_prices: RegionControlSupply[];
-}
-
-interface SupplyResponseSnake {
-  id: string;
-  supply_name: string;
-  description: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  supply_image: string[];
-  regional_prices: RegionControlSupply[];
-}
-
-
-export interface RegionControlSupply {
-    id: string;
-    region_id: number;
-    region_code: string;
-    currency: string;
-    supplier: string;
-    price: number;
-    quantity: number;
-}
+import type {SupplyOption, SupplyRequestSnake, SupplyResponseSnake} from "../../shared/types/supply.ts";
+import type {Region, RegionControlSupply} from "../../shared/types/region.ts";
 
 interface SupplyRegionalPricesModalProps {
     isOpen: boolean;
     closeModal: () => void;
-    supplyId: string;
+    supplyId: number;
     initialRegionalPrices?: RegionControlSupply[];
     onSaved?: (prices: RegionControlSupply[]) => void;
 }
@@ -73,9 +25,9 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
     initialRegionalPrices,
     onSaved,
 }) => {
-    const [regions, setRegions] = useState<RegionAPI[]>([]);
+    const [regions, setRegions] = useState<Region[]>([]);
     const [regionalPrices, setRegionalPrices] = useState<RegionControlSupply[]>([]);
-    const [supply, setSupply] = useState<SupplyList>();
+    const [supply, setSupply] = useState<SupplyOption>();
     const [loadingRegions, setLoadingRegions] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -88,13 +40,13 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
             try {
                 setLoadingRegions(true);
 
-                const supply = await authFetch<SupplyList>(`${API_ENDPOINTS.supply}/list/${supplyId}`, {
+                const supply = await authFetch<SupplyOption>(`${API_ENDPOINTS.supply}/list/${supplyId}`, {
                     method: "GET",
                 });
 
                 setSupply(supply ?? undefined);
 
-                const data = await authFetch<{ content: RegionAPI[] }>(API_ENDPOINTS.region, {
+                const data = await authFetch<{ content: Region[] }>(API_ENDPOINTS.region, {
                     method: "GET",
                 });
 
@@ -126,7 +78,7 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
         setRegionalPrices((prev) => [
             ...prev,
             {
-                id: "", // se o backend gerar, pode mandar vazio ou não mandar esse campo
+                id: 0, // se o backend gerar, pode mandar vazio ou não mandar esse campo
                 region_id: 0,
                 region_code: "",
                 currency: "",
@@ -214,7 +166,7 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                 supply_name: supply.supply_name,      // nunca null
                 description: supply.description ?? "",
                 is_active: supply.is_active,
-                supply_image: supply.supply_images ?? [],
+                supply_image: supply.supply_image ?? [],
                 regional_prices: regionalPrices,
             };
 
@@ -295,6 +247,7 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                                                         label: `${region.region_code} - ${region.region_name}`,
                                                     }))}
                                                     placeholder="Select a region"
+                                                    value={selectedRegion ? String(selectedRegion.id) : ""}  // ← controlado
                                                     onChange={(value) => {
                                                         const fakeEvent = {
                                                             target: { value },

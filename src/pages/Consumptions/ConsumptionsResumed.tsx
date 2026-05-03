@@ -5,37 +5,9 @@ import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
 import Label from "../../shared/components/form/Label.tsx";
 import Input from "../../shared/components/form/input/InputField";
-import Button from "../../components/ui/button/Button";
-
-interface RegionalPrice {
-  id: number;
-  region_id: number;
-  region_code: string;
-  currency: string;
-  supplier: string;
-  price: number;
-  quantity: number;
-}
-
-interface SupplyOption {
-  id: number;
-  supply_name: string;
-  description: string;
-  regional_prices: RegionalPrice[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  supply_image: string | null;
-}
-
-interface TransactionRequestPayload {
-  supply_id: number;
-  quantity_amended: number;
-  created: string;
-  region_id: number;
-  type_entry: string;
-  obs_alter?: string;
-}
+import Button from "../../shared/components/ui/button/Button";
+import type {SupplyOption} from "../../shared/types/supply.ts";
+import type {TransactionRequestPayload} from "../../shared/types/transaction.ts";
 
 type FormState = {
   supply_id: string;

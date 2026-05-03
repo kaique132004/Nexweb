@@ -4,9 +4,9 @@ import ComponentCard from "../../shared/components/common/ComponentCard.tsx";
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb.tsx";
 import PageMeta from "../../shared/components/common/PageMeta.tsx";
 import RegionTable from "./Table/RegionTable.tsx";
-import Button from "../../components/ui/button/Button.tsx";
-import type { Region } from "./Table/RegionTable.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import RegionFormModal from "./Form/RegionFormModal.tsx";
+import type {Region} from "../../shared/types/region.ts";
 // import { useTranslation } from "react-i18next"; // REMOVIDO
 
 export default function RegionList() {

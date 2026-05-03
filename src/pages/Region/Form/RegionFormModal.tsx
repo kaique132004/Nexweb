@@ -2,13 +2,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
 import React, { useState, useEffect } from 'react';
-import type { Region } from "../Table/RegionTable.tsx";
 import { authFetch, AuthFetchError } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
-import { Modal } from "../../../components/ui/modal";
+import { Modal } from "../../../shared/components/ui/modal";
 import Label from "../../../shared/components/form/Label.tsx";
 import Input from "../../../shared/components/form/input/InputField.tsx";
-import Button from "../../../components/ui/button/Button.tsx";
+import Button from "../../../shared/components/ui/button/Button.tsx";
+import type {Region} from "../../../shared/types/region.ts";
 // import { useTranslation } from 'react-i18next'; // REMOVIDO
 
 interface RegionFormModalProps {
@@ -91,7 +91,7 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
         });
       }
       onSaved();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to save region:', error);
       if (error instanceof AuthFetchError) {
         setSaveError(error.message);

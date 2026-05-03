@@ -1,6 +1,6 @@
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb";
 import ComponentCard from "../../shared/components/common/ComponentCard";
-import Avatar from "../../components/ui/avatar/Avatar";
+import Avatar from "../../shared/components/ui/avatar/Avatar";
 import PageMeta from "../../shared/components/common/PageMeta";
 
 export default function Avatars() {

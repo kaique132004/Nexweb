@@ -4,13 +4,14 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../components/ui/table";
-import Badge from "../../../components/ui/badge/Badge.tsx";
+} from "../ui/table";
+import Badge from "../ui/badge/Badge.tsx";
 import { useEffect, useState } from "react";
-import type { TransactionResponse } from "../../../pages/Consumptions/ConsumptionsTable.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
 import { useTranslation } from "react-i18next";
+import type {TransactionResponse} from "../../types/transaction.ts";
+import {formatDate} from "../../utils/date.ts";
 
 export default function RecentOrders() {
   const [, setLoading] = useState(false);
@@ -20,23 +21,24 @@ export default function RecentOrders() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
 
-        const data = await authFetch<TransactionResponse[]>(`${API_ENDPOINTS.transaction}/list`,)
+        const data = await authFetch<{ content: TransactionResponse[] }>(
+            `${API_ENDPOINTS.transaction}/list?page=0&size=5`  // já limita no backend
+        );
 
-        if (!data) setTransactions([]);
-        else setTransactions(data)
+        if (!data?.content) setTransactions([]);
+        else setTransactions(data.content); // ← extrai o array
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(error)
+      } catch (error) {
+        console.error(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchTransactions()
-  }, [])
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/3 sm:px-6">
@@ -133,7 +135,7 @@ export default function RecentOrders() {
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {transaction
-              .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime())
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .slice(0, 5)
               .map((tx) => (
                 <TableRow key={tx.id} className="">
@@ -150,13 +152,13 @@ export default function RecentOrders() {
                           {tx.supply_name}
                         </p>
                         <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                          {new Date(tx.created).toLocaleString()}
+                          {formatDate(tx.created_at)}
                         </span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-gray-500 text-theme-xs dark:text-gray-400">
-                    {tx.quantity_amended}
+                    {tx.quantity}
                   </TableCell>
                   <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     {(tx.total_price * 10).toLocaleString()}

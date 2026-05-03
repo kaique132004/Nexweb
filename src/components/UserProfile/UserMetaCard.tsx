@@ -1,27 +1,15 @@
 // components/auth/UserMetaCard.tsx
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
 import { useModal } from "../../hooks/useModal";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
+import { Modal } from "../../shared/components/ui/modal";
+import Button from "../../shared/components/ui/button/Button";
 import Input from "../../shared/components/form/input/InputField";
 import Label from "../../shared/components/form/Label.tsx";
 import { authFetch, AuthFetchError } from "../../api/apiAuth"; // Mantenha authFetch para dados de texto
 import { uploadProfilePicture, deleteProfilePicture, ImageUploadError } from "../../api/imageUpload"; // Importe as novas funções
 import { API_ENDPOINTS } from "../../api/endpoint";
-
-interface UserData {
-  user_id: string;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  role: string;
-  is_active: boolean;
-  profile_picture_url?: string;
-}
+import type {UserDetail} from "../../shared/types/user.ts";
 
 interface UserMetaCardProps {
   userId: string;
@@ -29,10 +17,10 @@ interface UserMetaCardProps {
 
 export default function UserMetaCard({ userId }: UserMetaCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<Partial<UserData>>({});
+  const [formData, setFormData] = useState<Partial<UserDetail>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -60,7 +48,7 @@ export default function UserMetaCard({ userId }: UserMetaCardProps) {
     setLoading(true);
     setSaveError(null);
     try {
-      const data = await authFetch<UserData>(
+      const data = await authFetch<UserDetail>(
           `${API_ENDPOINTS.auth}/user-detail/${userId}`, {
             method: "GET"
           }
@@ -82,7 +70,7 @@ export default function UserMetaCard({ userId }: UserMetaCardProps) {
     }
   };
 
-  const handleInputChange = (field: keyof UserData, value: string) => {
+  const handleInputChange = (field: keyof UserDetail, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

@@ -5,29 +5,9 @@ import PageMeta from "../../shared/components/common/PageMeta";
 import Label from "../../shared/components/form/Label.tsx";
 import { authFetch } from "../../api/apiAuth";
 import { API_ENDPOINTS } from "../../api/endpoint";
-import Button from "../../components/ui/button/Button";
+import Button from "../../shared/components/ui/button/Button";
 import QRCode from "qrcode";
-
-interface RegionalPrice {
-  id: number;
-  region_id: number;
-  region_code: string;
-  currency: string;
-  supplier: string;
-  price: number;
-  quantity: number;
-}
-
-interface SupplyOption {
-  id: number;
-  supply_name: string;
-  description: string;
-  regional_prices: RegionalPrice[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  supply_image: string | null;
-}
+import type {SupplyOption} from "../../shared/types/supply.ts";
 
 type FormState = {
   supply_id: string;

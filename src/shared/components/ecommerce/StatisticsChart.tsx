@@ -9,7 +9,7 @@ type Movement = {
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity_amended: number;
+  quantity: number;
   quantity_before: number;
   quantity_after: number;
   created: string;
@@ -77,7 +77,7 @@ export default function StatisticsChart({
   );
 
   const seriesQuantityOut = sorted.map((item) =>
-    item.type_entry === "OUT" ? item.quantity_amended : 0
+    item.type_entry === "OUT" ? item.quantity : 0
   );
 
   const seriesTotalPriceOut = sorted.map((item) =>

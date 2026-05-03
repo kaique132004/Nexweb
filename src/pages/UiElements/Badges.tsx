@@ -1,5 +1,5 @@
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb";
-import Badge from "../../components/ui/badge/Badge";
+import Badge from "../../shared/components/ui/badge/Badge";
 import { PlusIcon } from "../../assets/icons";
 import PageMeta from "../../shared/components/common/PageMeta";
 import ComponentCard from "../../shared/components/common/ComponentCard";

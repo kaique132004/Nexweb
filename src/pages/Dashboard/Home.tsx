@@ -10,43 +10,17 @@ import PageMeta from "../../shared/components/common/PageMeta";
 import { useEffect, useMemo, useState, useCallback } from "react"; // Adicionado useCallback
 import { API_ENDPOINTS } from "../../api/endpoint";
 import { authFetch, AuthFetchError } from "../../api/apiAuth";
+import type {PageableResponse} from "../../shared/types/common.ts";
 
 // Interface para a estrutura de resposta paginada da API
-interface PageableResponse<T> {
-  content: T[];
-  pageable: {
-    page_number: number;
-    page_size: number;
-    sort: {
-      sorted: boolean;
-      unsorted: boolean;
-      empty: boolean;
-    };
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
-  };
-  total_elements: number;
-  total_pages: number;
-  last: boolean;
-  size: number;
-  number: number;
-  sort: {
-    sorted: boolean;
-    unsorted: boolean;
-    empty: boolean;
-  };
-  first: boolean;
-  number_of_elements: number;
-  empty: boolean;
-}
+
 
 type Movement = {
   id: number;
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity_amended: number;
+  quantity: number;
   quantity_before: number;
   quantity_after: number;
   created: string;
@@ -68,10 +42,10 @@ export default function Home() {
   const [regionFilter, setRegionFilter] = useState<RegionFilter>("GLOBAL");
 
   // Estados para paginação (se você quiser implementar no futuro)
-  // const [currentPage, setCurrentPage] = useState(0);
-  // const [pageSize, setPageSize] = useState(10);
-  // const [totalElements, setTotalElements] = useState(0);
-  // const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Filtros
   const [startDate, setStartDate] = useState<string>("");
@@ -94,10 +68,10 @@ export default function Home() {
       if (response && Array.isArray(response.content)) {
         setMovement(response.content);
         // Se for usar paginação, atualize os estados aqui:
-        // setTotalElements(response.total_elements);
-        // setTotalPages(response.total_pages);
-        // setCurrentPage(response.number);
-        // setPageSize(response.size);
+        setTotalElements(response.total_elements);
+        setTotalPages(response.total_pages);
+        setCurrentPage(response.number);
+        setPageSize(response.size);
       } else {
         // Caso a resposta não tenha o formato esperado ou content não seja um array
         console.warn("API response for movements did not contain an array 'content':", response);
@@ -367,24 +341,24 @@ export default function Home() {
         {!loading && !error && (
             <div className="grid grid-cols-12 gap-4 md:gap-6">
               <div className="col-span-12 space-y-6 xl:col-span-7">
-                {/*<EcommerceMetrics data={filteredMovements} regionFilter={regionFilter} />*/}
-                {/*<MonthlySalesChart data={filteredMovements} regionFilter={regionFilter} />*/}
+                <EcommerceMetrics data={filteredMovements} regionFilter={regionFilter} />
+                <MonthlySalesChart data={filteredMovements} regionFilter={regionFilter} />
               </div>
 
               <div className="col-span-12 xl:col-span-5">
-                {/*<MonthlyTarget data={filteredMovements} regionFilter={regionFilter} />*/}
+                <MonthlyTarget data={filteredMovements} regionFilter={regionFilter} />
               </div>
 
               <div className="col-span-12">
-                {/*<StatisticsChart data={filteredMovements} regionFilter={regionFilter} />*/}
+                <StatisticsChart data={filteredMovements} regionFilter={regionFilter} />
               </div>
 
               <div className="col-span-12 xl:col-span-5">
-                {/*<DemographicCard data={filteredMovements} regionFilter={regionFilter}/>*/}
+                <DemographicCard data={filteredMovements} regionFilter={regionFilter}/>
               </div>
 
               <div className="col-span-12 xl:col-span-7">
-                {/*<RecentOrders />*/}
+                <RecentOrders />
               </div>
             </div>
         )}

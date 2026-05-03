@@ -6,7 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from "./index.tsx";
-import {usePaginatedData} from "../../../hooks/usePaginatedData";
+import {usePaginatedData} from "../../../../hooks/usePaginatedData.ts";
 
 // ─── Tipos públicos ───────────────────────────────────────────────────────────
 

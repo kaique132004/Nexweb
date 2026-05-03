@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
+import { Modal } from "../../shared/components/ui/modal";
+import Button from "../../shared/components/ui/button/Button";
 import Label from "../../shared/components/form/Label.tsx";
 import Select from "../../shared/components/form/Select.tsx";
 import { authFetch } from "../../api/apiAuth";

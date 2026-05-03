@@ -1,7 +1,7 @@
 import ComponentCard from "../../shared/components/common/ComponentCard";
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb";
 import PageMeta from "../../shared/components/common/PageMeta";
-import Button from "../../components/ui/button/Button";
+import Button from "../../shared/components/ui/button/Button";
 import { BoxIcon } from "../../assets/icons";
 
 export default function Buttons() {

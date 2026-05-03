@@ -3,13 +3,17 @@ import { useState } from "react";
 import ComponentCard from "../../shared/components/common/ComponentCard.tsx";
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb.tsx";
 import PageMeta from "../../shared/components/common/PageMeta.tsx";
-import UserListTable, { type ApiUser } from "./Table/UserTable.tsx";
-import Button from "../../components/ui/button/Button.tsx";
+import UserListTable from "./Table/UserTable.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import UserFormModal from "./Form/UserFormModal.tsx";
+import type {ApiUser} from "../../shared/types/user.ts";
 
 export default function UserList() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<ApiUser | null>(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    const triggerRefresh = () => setRefreshTrigger(prev => prev + 1);
 
     const openCreate = () => {
         setEditingUser(null);
@@ -18,7 +22,7 @@ export default function UserList() {
 
     const handleSaved = () => {
         setIsFormOpen(false);
-        // aqui você pode disparar um refetch na tabela
+        triggerRefresh(); // ← dispara reload da tabela
     };
 
     return (
@@ -45,17 +49,19 @@ export default function UserList() {
                 }
             >
                 <UserListTable
-                    onEditUser={(user: any) => {
+                    onEditUser={(user: ApiUser) => {
                         setEditingUser(user);
                         setIsFormOpen(true);
                     }}
+                    refreshTrigger={refreshTrigger}        // ← estava faltando
+                    onRefreshNeeded={triggerRefresh}       // ← para regiões/permissões
                 />
             </ComponentCard>
 
             <UserFormModal
                 isOpen={isFormOpen}
                 closeModal={() => setIsFormOpen(false)}
-                user={editingUser}      // 🔥 se null => create, se tiver user => edit
+                user={editingUser}
                 onSaved={handleSaved}
             />
         </>

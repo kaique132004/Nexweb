@@ -1,16 +1,7 @@
-import { DataTable, type ColumnDef } from "../../../components/ui/table/DataTable";
+import { DataTable, type ColumnDef } from "../../../shared/components/ui/table/DataTable";
 import { API_ENDPOINTS } from "../../../api/endpoint";
-import Button from "../../../components/ui/button/Button";
-
-export interface Region {
-    id: string;
-    region_code: string;
-    region_name: string;
-    city_name?: string;
-    country_name?: string;
-    is_active: boolean;
-    // ... demais campos
-}
+import Button from "../../../shared/components/ui/button/Button";
+import type {Region} from "../../../shared/types/region.ts";
 
 interface RegionTableProps {
     onEditRegion: (region: Region) => void;

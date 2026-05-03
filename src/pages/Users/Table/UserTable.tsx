@@ -1,43 +1,22 @@
 import { useEffect, useState } from "react";
-import { DataTable, type ColumnDef, type ContextMenuAction } from "../../../components/ui/table/DataTable";
-import Badge from "../../../components/ui/badge/Badge";
+import { DataTable, type ColumnDef, type ContextMenuAction } from "../../../shared/components/ui/table/DataTable";
+import Badge from "../../../shared/components/ui/badge/Badge";
 import { authFetch } from "../../../api/apiAuth";
 import { API_ENDPOINTS } from "../../../api/endpoint";
 import DualSelectModal from "../Form/DualSelectModal";
+import type {ApiUser} from "../../../shared/types/user.ts";
+import type {PermissionAPI} from "../../../shared/types/permission.ts";
+import {formatDate} from "../../../shared/utils/date.ts";
 
-export interface PermissionAPI {
-  id: number;
-  permission_name: string;
-  description: string;
-  is_active: boolean;
-}
 
-export interface ApiUser {
-  id: string;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  phone: string | null;
-  is_active: boolean;
-  created_by: string;
-  created_at: string;
-  last_password_reset_data: string | null;
-  is_not_temporary: boolean;
-  account_non_expired: boolean;
-  account_non_locked: boolean;
-  credentials_non_expired: boolean;
-  regions: string[];
-  permissions: string[];
-}
 
 interface UserListTableProps {
   onEditUser?: (user: ApiUser) => void;
   refreshTrigger?: number;
+  onRefreshNeeded?: () => void; // ← adiciona
 }
 
-export default function UserListTable({ onEditUser, refreshTrigger }: UserListTableProps) {
+export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNeeded }: UserListTableProps) {
   const [permissions, setPermissions] = useState<PermissionAPI[]>([]);
   const [regions, setRegions] = useState<Array<{ region_code: string; region_name: string }>>([]);
 
@@ -82,40 +61,15 @@ export default function UserListTable({ onEditUser, refreshTrigger }: UserListTa
     return "warning";
   };
 
-  const handleSavePermissions = async (assignedPermissions: string[]) => {
-    if (!selectedUser) return;
-    const payload = {
-      firstName: selectedUser.first_name,
-      lastName: selectedUser.last_name,
-      role: selectedUser.role,
-      isActive: selectedUser.is_active,
-      region_codes: selectedUser.regions.map((code) => ({ region_code: code })),
-      permissions: assignedPermissions.map((p) => ({ permission_name: p })),
-      is_not_temporary: selectedUser.is_not_temporary,
-      account_non_expired: selectedUser.account_non_expired,
-      account_non_locked: selectedUser.account_non_locked,
-      credentials_non_expired: selectedUser.credentials_non_expired,
-    };
-    try {
-      await authFetch(`${API_ENDPOINTS.auth}/update/${selectedUser.id}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-      setIsPermModalOpen(false);
-    } catch (err) {
-      console.error("Error saving permissions:", err);
-    }
-  };
-
   const handleSaveRegions = async (assignedRegionCodes: string[]) => {
     if (!selectedUser) return;
     const payload = {
-      firstName: selectedUser.first_name,
-      lastName: selectedUser.last_name,
+      first_name: selectedUser.first_name,
+      last_name: selectedUser.last_name,
       role: selectedUser.role,
-      isActive: selectedUser.is_active,
-      region_codes: assignedRegionCodes.map((code) => ({ region_code: code })),
-      permissions: selectedUser.permissions.map((p) => ({ permission_name: p })),
+      active: selectedUser.is_active,
+      region_codes: assignedRegionCodes,                    // ✅ Set<String> simples
+      permissions: selectedUser.permissions,               // ✅ Set<String> simples
       is_not_temporary: selectedUser.is_not_temporary,
       account_non_expired: selectedUser.account_non_expired,
       account_non_locked: selectedUser.account_non_locked,
@@ -127,8 +81,35 @@ export default function UserListTable({ onEditUser, refreshTrigger }: UserListTa
         body: JSON.stringify(payload),
       });
       setRegionModalOpen(false);
+      onRefreshNeeded?.(); // ← força reload da tabela
     } catch (err) {
       console.error("Error saving regions:", err);
+    }
+  };
+
+  const handleSavePermissions = async (assignedPermissions: string[]) => {
+    if (!selectedUser) return;
+    const payload = {
+      first_name: selectedUser.first_name,
+      last_name: selectedUser.last_name,
+      role: selectedUser.role,
+      active: selectedUser.is_active,
+      regionCodes: selectedUser.regions,                   // ✅ Set<String> simples
+      permissions: assignedPermissions,                    // ✅ Set<String> simples
+      is_not_temporary: selectedUser.is_not_temporary,
+      account_non_expired: selectedUser.account_non_expired,
+      account_non_locked: selectedUser.account_non_locked,
+      credentials_non_expired: selectedUser.credentials_non_expired,
+    };
+    try {
+      await authFetch(`${API_ENDPOINTS.auth}/update/${selectedUser.id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+      setIsPermModalOpen(false);
+      onRefreshNeeded?.(); // ← força reload da tabela
+    } catch (err) {
+      console.error("Error saving permissions:", err);
     }
   };
 
@@ -168,7 +149,7 @@ export default function UserListTable({ onEditUser, refreshTrigger }: UserListTa
     {
       key: "created_at",
       label: "Created At",
-      render: (user) => new Date(user.created_at).toLocaleString(),
+      render: (user) => formatDate(user.created_at),
     },
     {
       key: "regions",

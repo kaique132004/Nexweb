@@ -3,13 +3,14 @@ import { useState } from "react";
 import ComponentCard from "../../shared/components/common/ComponentCard.tsx";
 import PageBreadcrumb from "../../shared/components/common/PageBreadCrumb.tsx";
 import PageMeta from "../../shared/components/common/PageMeta.tsx";
-import SuppliesTable, { type SupplyList } from "./SuppliesTable.tsx";
-import Button from "../../components/ui/button/Button.tsx";
+import SuppliesTable from "./Table/SuppliesTable.tsx";
+import Button from "../../shared/components/ui/button/Button.tsx";
 import SupplyFormModal from "./Form/SupplyFormModal.tsx";
+import type {SupplyOption} from "../../shared/types/supply.ts";
 
 export default function SupplyList() {
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingRegion, setEditingRegion] = useState<SupplyList | any>(null);
+    const [editingRegion, setEditingRegion] = useState<SupplyOption | any>(null);
 
 
     const openCreate = () => {

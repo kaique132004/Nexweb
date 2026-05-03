@@ -4,34 +4,19 @@
 import React, { useEffect, useState } from "react";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
-import { Modal } from "../../../components/ui/modal";
+import { Modal } from "../../../shared/components/ui/modal";
 import Label from "../../../shared/components/form/Label.tsx";
 import Input from "../../../shared/components/form/input/InputField.tsx";
-import Button from "../../../components/ui/button/Button.tsx";
-import type { ApiUser } from "../Table/UserTable.tsx";
-import Select from "../../../shared/components/form/Select.tsx"; // seu Select simples
+import Button from "../../../shared/components/ui/button/Button.tsx";
+import Select from "../../../shared/components/form/Select.tsx";
+import {EnvelopeIcon} from "../../../assets/icons";
+import type {ApiUser, UserFormPayload} from "../../../shared/types/user.ts"; // seu Select simples
 
 interface UserFormModalProps {
   isOpen: boolean;
   closeModal: () => void;
   user?: ApiUser | null;              // se tiver user => editar, senão => criar
   onSaved?: (user?: ApiUser) => void; // callback depois de salvar
-}
-
-// Payload alinhado com o DTO da API
-interface UserFormPayload {
-  username: string;
-  email: string;
-  password: string; // opcional na prática (pode ir vazio)
-  first_name: string;
-  last_name: string;
-  phone: string;
-  role: string;
-  active: boolean;
-  is_not_temporary: boolean;
-  account_non_expired: boolean;
-  account_non_locked: boolean;
-  credentials_non_expired: boolean;
 }
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
@@ -249,12 +234,18 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                 {/* Email */}
                 <div className="col-span-2 lg:col-span-1">
                   <Label>Email Address</Label>
-                  <Input
-                    type="email"
-                    value={form.email}
-                    onChange={handleTextChange("email")}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      type="email"
+                      value={form.email}
+                      onChange={handleTextChange("email")}
+                      required
+                      className={"pl-[62px]"}
+                    />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                      <EnvelopeIcon className="size-6" />
+                    </span>
+                  </div>
                 </div>
 
                 {/* Password (opcional, aparece sempre) */}
@@ -285,7 +276,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                   <Select
                     options={roleOptions}
                     placeholder="Select role"
-                    defaultValue={form.role}
+                    value={form.role}
                     onChange={handleRoleChange}
                     className="dark:bg-[#1e1e1e]"
                   />
@@ -294,6 +285,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                 {/* Booleans */}
                 <div className="col-span-2 flex flex-col gap-2 mt-2">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-sm dark:text-white">
+
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"

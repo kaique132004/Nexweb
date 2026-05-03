@@ -11,7 +11,7 @@ type Movement = {
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity_amended: number;
+  quantity: number;
   quantity_before: number;
   quantity_after: number;
   created: string; // ISO string
@@ -71,7 +71,7 @@ export default function MonthlySalesChart({
 
       // quantidade consumida
       totalsByMonth[key] =
-        (totalsByMonth[key] || 0) + item.quantity_amended;
+        (totalsByMonth[key] || 0) + item.quantity;
     });
 
     const sortedKeys = Object.keys(totalsByMonth).sort();

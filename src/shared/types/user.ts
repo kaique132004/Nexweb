@@ -76,6 +76,7 @@ export interface UserDetail {
   first_name: string;
   last_name: string;
   role: string;
+  phone?: string;
   created_by: string | null;
   created_at: string;
   last_password_reset_date: string | null;
@@ -87,4 +88,42 @@ export interface UserDetail {
   preferences: UserPreferences;
   active: boolean;
   not_temporary: boolean;
+  profile_picture_url: string;
+}
+
+export interface UserFormPayload {
+  username: string;
+  email: string;
+  password: string; // opcional na prática (pode ir vazio)
+  first_name: string;
+  last_name: string;
+  phone: string;
+  role: string;
+  active: boolean;
+  is_not_temporary: boolean;
+  account_non_expired: boolean;
+  account_non_locked: boolean;
+  credentials_non_expired: boolean;
+}
+
+
+
+export interface ApiUser {
+  id: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  phone: string | null;
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  last_password_reset_data: string | null;
+  is_not_temporary: boolean;
+  account_non_expired: boolean;
+  account_non_locked: boolean;
+  credentials_non_expired: boolean;
+  regions: string[];
+  permissions: string[];
 }

@@ -4,8 +4,8 @@ import { worldMill } from "@react-jvectormap/world";
 import { useEffect, useState } from "react";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
-import type { TransactionResponse } from "../../../pages/Consumptions/ConsumptionsTable.tsx";
-import type { RegionAPI } from "../../../pages/Region/Form/RegionFormModal.tsx";
+import type {TransactionResponse} from "../../types/transaction.ts";
+import type {Region} from "../../types/region.ts";
 
 interface CountryMapProps {
   mapColor?: string;
@@ -21,7 +21,7 @@ interface Marker {
 
 const CountryMap: React.FC<CountryMapProps> = ({ mapColor, countryCode }) => {
   const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
-  const [regions, setRegions] = useState<RegionAPI[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,12 +29,12 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor, countryCode }) => {
       try {
         setLoading(true);
         const [transactionRes, regionRes] = await Promise.all([
-          authFetch<TransactionResponse[]>(`${API_ENDPOINTS.transaction}/list`),
-          authFetch<RegionAPI[]>(`${API_ENDPOINTS.region}`),
+          authFetch<{ content: TransactionResponse[] }>(`${API_ENDPOINTS.transaction}/list?page=0&size=999`),
+          authFetch<{ content: Region[] }>(`${API_ENDPOINTS.region}?page=0&size=999`),
         ]);
 
-        if (transactionRes) setTransactions(transactionRes);
-        if (regionRes) setRegions(regionRes);
+        if (transactionRes?.content) setTransactions(transactionRes.content); // ← extrai array
+        if (regionRes?.content) setRegions(regionRes.content);               // ← extrai array
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {

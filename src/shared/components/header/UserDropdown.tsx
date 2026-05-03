@@ -1,21 +1,50 @@
-import { useState } from "react";
-import { DropdownItem } from "../../../components/ui/dropdown/DropdownItem.tsx";
-import { Dropdown } from "../../../components/ui/dropdown/Dropdown.tsx";
+import { useEffect, useState } from "react";
+import { DropdownItem } from "../ui/dropdown/DropdownItem.tsx";
+import { Dropdown } from "../ui/dropdown/Dropdown.tsx";
 import { Link } from "react-router";
 import { useUser } from "../../../context/UserContext.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
+import type { UserDetail } from "../../types/user.ts";
+
+const FALLBACK_AVATAR = "/assets/SITA_LOGO-AVATAR-GREEN.png"; // ajuste o caminho
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const { user } = useUser();
 
-  if(!user){
-    window.location.href = "/signin";
-  }
+  // Pega o userId direto, sem useState desnecessário
+  const userId = JSON.parse(sessionStorage.getItem("user-session") ?? "{}").id as string | undefined;
+
+  // Redireciona fora do render (sem side effect no corpo do componente)
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/signin";
+    }
+  }, [user]);
+
+  // Carrega dados do usuário UMA vez, ou quando userId mudar
+  useEffect(() => {
+    if (!userId) return;
+
+    const loadUserData = async () => {
+      try {
+        const data = await authFetch<UserDetail>(
+            `${API_ENDPOINTS.auth}/user-detail/${userId}`,
+            { method: "GET" }
+        );
+        if (data) setUserDetail(data);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+
+    loadUserData();
+  }, [userId]); // ← só roda quando userId muda
 
   function toggleDropdown() {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
   }
 
   function closeDropdown() {
@@ -23,42 +52,57 @@ export default function UserDropdown() {
   }
 
   function logout() {
-    // Limpar o token de autenticação (exemplo usando localStorage)
     sessionStorage.removeItem("user-session");
-    authFetch(`${API_ENDPOINTS.auth}/logout`, {
-      method: "POST"
-    });
+    authFetch(`${API_ENDPOINTS.auth}/logout`, { method: "POST" });
   }
 
+  // Resolve a imagem com fallback
+  const avatarSrc = userDetail?.profile_picture_url?.trim()
+      ? userDetail.profile_picture_url
+      : FALLBACK_AVATAR;
 
+  const displayName = userDetail
+      ? `${userDetail.first_name ?? ""} ${userDetail.last_name ?? ""}`.trim()
+      : user?.username ?? "";
 
   return (
     <div className="relative">
       <button
-        onClick={toggleDropdown}
-        className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
+          onClick={toggleDropdown}
+          className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="/SITA_LOGO-AVATAR-GREEN.png" alt="User" />
+        <span className="mr-3 overflow-hidden rounded-full h-11 w-11 bg-gray-200 dark:bg-gray-700 shrink-0">
+          <img
+              src={avatarSrc}
+              alt={displayName}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                // Se a imagem falhar, usa fallback
+                (e.currentTarget as HTMLImageElement).src = FALLBACK_AVATAR;
+              }}
+          />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">{user?.username}</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {user?.username}
+        </span>
+
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          width="18"
-          height="20"
-          viewBox="0 0 18 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+            className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+            }`}
+            width="18"
+            height="20"
+            viewBox="0 0 18 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M4.3125 8.65625L9 13.3437L13.6875 8.65625"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+              d="M4.3125 8.65625L9 13.3437L13.6875 8.65625"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
           />
         </svg>
       </button>
@@ -70,7 +114,7 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {user?.name}
+            {displayName}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
             {user?.email}
