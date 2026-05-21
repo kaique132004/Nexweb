@@ -1,36 +1,46 @@
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
-import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
-import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./shared/components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
-import Asset from "./pages/Dashboard/Asset";
-import UserList from "./pages/Users/UserList.tsx";
-import RegionList from "./pages/Region/RegionList.tsx";
-import SupplyList from "./pages/Supply/SupplyList.tsx";
-import TransactionList from "./pages/Transactions/TransactionList.tsx";
-import ForgotPassword from "./pages/AuthPages/ForgotPassword";
-import RedefinePassword from "./pages/AuthPages/RedefinePass";
-import FirstLoginPage from "./pages/AuthPages/FirstLoginPage";
 import { NotificationProvider } from "./context/NotificationContext";
-import GenQR from "./pages/QRcode/GenQR";
-import ConsumptionPage from "./pages/Consumptions/ConsumptionPage";
-import TwoFactorAuthPage from "./pages/AuthPages/TwoFactorAuthPage.tsx";
+import { ErrorBoundary } from "./shared/components/common/ErrorBoundary";
+
+const SignIn = lazy(() => import("./pages/AuthPages/SignIn"));
+const SignUp = lazy(() => import("./pages/AuthPages/SignUp"));
+const NotFound = lazy(() => import("./pages/OtherPage/NotFound"));
+const UserProfiles = lazy(() => import("./pages/UserProfiles"));
+const Videos = lazy(() => import("./pages/UiElements/Videos"));
+const Images = lazy(() => import("./pages/UiElements/Images"));
+const Alerts = lazy(() => import("./pages/UiElements/Alerts"));
+const Badges = lazy(() => import("./pages/UiElements/Badges"));
+const Avatars = lazy(() => import("./pages/UiElements/Avatars"));
+const Buttons = lazy(() => import("./pages/UiElements/Buttons"));
+const LineChart = lazy(() => import("./pages/Charts/LineChart"));
+const BarChart = lazy(() => import("./pages/Charts/BarChart"));
+const Calendar = lazy(() => import("./pages/Calendar"));
+const BasicTables = lazy(() => import("./pages/Tables/BasicTables"));
+const FormElements = lazy(() => import("./pages/Forms/FormElements"));
+const Blank = lazy(() => import("./pages/Blank"));
+const AppLayout = lazy(() => import("./layout/AppLayout"));
+const Home = lazy(() => import("./pages/Dashboard/Home"));
+const Asset = lazy(() => import("./pages/Dashboard/Asset"));
+const UserList = lazy(() => import("./pages/Users/UserList"));
+const RegionList = lazy(() => import("./pages/Region/RegionList"));
+const SupplyList = lazy(() => import("./pages/Supply/SupplyList"));
+const TransactionList = lazy(() => import("./pages/Transactions/TransactionList"));
+const ForgotPassword = lazy(() => import("./pages/AuthPages/ForgotPassword"));
+const RedefinePassword = lazy(() => import("./pages/AuthPages/RedefinePass"));
+const FirstLoginPage = lazy(() => import("./pages/AuthPages/FirstLoginPage"));
+const GenQR = lazy(() => import("./pages/QRcode/GenQR"));
+const ConsumptionPage = lazy(() => import("./pages/Consumptions/ConsumptionPage"));
+const TwoFactorAuthPage = lazy(() => import("./pages/AuthPages/TwoFactorAuthPage"));
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 // Componente de proteção
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -42,56 +52,53 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <Routes>
-        {/* Dashboard Layout protegido */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <NotificationProvider>
-                <AppLayout />
-              </NotificationProvider>
-            </ProtectedRoute>
-          }
-        >
-          <Route index path="/" element={<Home />} />
-          {/* Others Page */}
-          <Route path="/profile" element={<UserProfiles />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/blank" element={<Blank />} />
-          <Route path="/asset" element={<Asset />} />
-          {/* Forms */}
-          <Route path="/form-elements" element={<FormElements />} />
-          {/* Tables */}
-          <Route path="/basic-tables" element={<BasicTables />} />
-          {/* Ui Elements */}
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/avatars" element={<Avatars />} />
-          <Route path="/badge" element={<Badges />} />
-          <Route path="/buttons" element={<Buttons />} />
-          <Route path="/images" element={<Images />} />
-          <Route path="/videos" element={<Videos />} />
-          {/* Charts */}
-          <Route path="/line-chart" element={<LineChart />} />
-          <Route path="/bar-chart" element={<BarChart />} />
-          {/* Lists */}
-          <Route path="/user-list" element={<UserList />} />
-          <Route path="/region-list" element={<RegionList />} />
-          <Route path="/supply-list" element={<SupplyList />} />
-          <Route path="/transaction-list" element={<TransactionList />} />
-          <Route path="/qrcode" element={<GenQR />} />
-        </Route>
-        {/* Auth Layout */}
-        <Route path="/2fa" element={<TwoFactorAuthPage />} /> {/* <-- Nova rota */}
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/redefine-password" element={<RedefinePassword />} />
-        <Route path="/first-login" element={<FirstLoginPage />} />
-        {/* Fallback Route */}
-        <Route path="*" element={<NotFound />} />
-
-        <Route path="/register-consumption" element={<ConsumptionPage />} />
-      </Routes>
-    </Router >
+      <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Dashboard Layout protegido */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <NotificationProvider>
+                  <AppLayout />
+                </NotificationProvider>
+              </ProtectedRoute>
+            }
+          >
+            <Route index path="/" element={<Home />} />
+            <Route path="/profile" element={<UserProfiles />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/blank" element={<Blank />} />
+            <Route path="/asset" element={<Asset />} />
+            <Route path="/form-elements" element={<FormElements />} />
+            <Route path="/basic-tables" element={<BasicTables />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/avatars" element={<Avatars />} />
+            <Route path="/badge" element={<Badges />} />
+            <Route path="/buttons" element={<Buttons />} />
+            <Route path="/images" element={<Images />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/line-chart" element={<LineChart />} />
+            <Route path="/bar-chart" element={<BarChart />} />
+            <Route path="/user-list" element={<UserList />} />
+            <Route path="/region-list" element={<RegionList />} />
+            <Route path="/supply-list" element={<SupplyList />} />
+            <Route path="/transaction-list" element={<TransactionList />} />
+            <Route path="/qrcode" element={<GenQR />} />
+            <Route path="/register-consumption" element={<ConsumptionPage />} />
+          </Route>
+          {/* Auth Layout */}
+          <Route path="/2fa" element={<TwoFactorAuthPage />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/redefine-password" element={<RedefinePassword />} />
+          <Route path="/first-login" element={<FirstLoginPage />} />
+          {/* Fallback Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+      </ErrorBoundary>
+    </Router>
   );
 }

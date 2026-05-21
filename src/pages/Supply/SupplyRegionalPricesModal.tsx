@@ -78,13 +78,14 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
         setRegionalPrices((prev) => [
             ...prev,
             {
-                id: 0, // se o backend gerar, pode mandar vazio ou não mandar esse campo
+                id: 0,
                 region_id: 0,
                 region_code: "",
                 currency: "",
                 supplier: "",
                 price: 0,
                 quantity: 1,
+                min_stock_alert: 5,
             },
         ]);
     };
@@ -121,7 +122,7 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                     const current = copy[index];
 
                     let parsed: any = value;
-                    if (field === "price" || field === "quantity") {
+                    if (field === "price" || field === "quantity" || field === "min_stock_alert") {
                         parsed = value === "" ? 0 : Number(value);
                     }
 
@@ -236,7 +237,7 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                                     return (
                                         <div
                                             key={rp.id || index}
-                                            className="grid grid-cols-1 gap-3 rounded-xl border border-slate-700 p-3 lg:grid-cols-7"
+                                            className="grid grid-cols-1 gap-3 rounded-xl border border-slate-700 p-3 lg:grid-cols-8"
                                         >
                                             {/* Region */}
                                             <div className="lg:col-span-2">
@@ -296,6 +297,16 @@ const SupplyRegionalPricesModal: React.FC<SupplyRegionalPricesModalProps> = ({
                                                     type="number"
                                                     value={rp.quantity}
                                                     onChange={handleFieldChange(index, "quantity")}
+                                                />
+                                            </div>
+
+                                            {/* Min Stock Alert */}
+                                            <div className="lg:col-span-1">
+                                                <Label>Min Stock</Label>
+                                                <Input
+                                                    type="number"
+                                                    value={rp.min_stock_alert ?? 5}
+                                                    onChange={handleFieldChange(index, "min_stock_alert")}
                                                 />
                                             </div>
 

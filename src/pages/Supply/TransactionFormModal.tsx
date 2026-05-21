@@ -5,7 +5,8 @@ import { Modal } from "../../shared/components/ui/modal";
 import Label from "../../shared/components/form/Label.tsx";
 import Input from "../../shared/components/form/input/InputField.tsx";
 import Button from "../../shared/components/ui/button/Button.tsx";
-import type { TransactionResponse } from "../Consumptions/ConsumptionsTable.tsx";
+import Alert from "../../shared/components/ui/alert/Alert.tsx";
+import type { TransactionResponse } from "../../shared/types/transaction.ts";
 import { useTranslation } from "react-i18next";
 import Select from "../../shared/components/form/Select.tsx";
 import type {SupplyOption} from "../../shared/types/supply.ts";
@@ -93,11 +94,11 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
             return {
               supply_id: String(transaction.supply_name),
               region_id: String(transaction.region_code),
-              quantity_amended: String(transaction.quantity),
+              quantity_amended: String(transaction.quantity_amended),
               type_entry: transaction.type_entry ?? "",
               obs_alter: transaction.obs_alter ?? "",
-              created: transaction.created
-                  ? new Date(transaction.created).toISOString().slice(0, 16)
+              created: transaction.created_at
+                  ? new Date(transaction.created_at).toISOString().slice(0, 16)
                   : new Date().toISOString().slice(0, 16),
             };
           }
@@ -343,7 +344,11 @@ const TransactionFormModal: React.FC<TransactionRequestModalProps> = ({
                   </div>
                 </div>
 
-                {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+                {error && (
+                  <div className="mt-4">
+                    <Alert variant="error" title="Error" message={error} />
+                  </div>
+                )}
               </div>
             </div>
 

@@ -7,6 +7,7 @@ import {
     TableRow,
 } from "./index.tsx";
 import {usePaginatedData} from "../../../../hooks/usePaginatedData.ts";
+import Alert from "../alert/Alert";
 
 // ─── Tipos públicos ───────────────────────────────────────────────────────────
 
@@ -165,12 +166,8 @@ export function DataTable<T extends object>({
 
     if (error) {
         return (
-            <div
-                className="mb-4 p-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
-                role="alert"
-            >
-                <strong className="font-semibold">Error: </strong>
-                {error}
+            <div className="p-4">
+                <Alert variant="error" title="Failed to load data" message={error} />
             </div>
         );
     }

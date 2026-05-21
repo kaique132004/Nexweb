@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import React, { useEffect, useState } from "react";
 import { Modal } from "../../shared/components/ui/modal";
 import Button from "../../shared/components/ui/button/Button.tsx";
-import Label from "../../shared/components/form/Label.tsx";
 import { authFetch } from "../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../api/endpoint.ts";
 import type {
@@ -84,7 +84,7 @@ const ColumnsVisibilityModal: React.FC<ColumnsVisibilityModalProps> = ({
       }
 
       on_close();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Erro ao salvar visibilidade de colunas:", err);
       const backend_message =
         err?.response?.data?.message ??

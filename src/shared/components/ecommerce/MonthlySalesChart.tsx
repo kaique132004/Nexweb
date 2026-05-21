@@ -1,249 +1,136 @@
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
-// import { Dropdown } from "../ui/dropdown/Dropdown";
-// import { DropdownItem } from "../ui/dropdown/DropdownItem";
-// import { MoreDotIcon } from "../../assets/icons";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 type Movement = {
-  id: number;
-  username: string;
-  supply_name: string;
-  supply_id: number;
-  quantity: number;
-  quantity_before: number;
-  quantity_after: number;
-  created: string; // ISO string
-  region_id: number;
-  region_code: string;
-  price_unit: number;
-  total_price: number;
-  type_entry: "IN" | "OUT";
-  obs_alter: string | null;
+    id: number;
+    supply_name: string;
+    supply_id: number;
+    quantity_amended: number;
+    created_at: string;
+    region_code: string;
+    type_entry: "IN" | "OUT";
 };
 
 type MonthlySalesChartProps = {
-  data: Movement[];
-  regionFilter?: string; // "GLOBAL" ou region_code
+    data: Movement[];
+    regionFilter?: string;
 };
 
-const monthShortNames = [
-  "Jan","Feb","Mar","Apr","May","Jun",
-  "Jul","Aug","Sep","Oct","Nov","Dec"
-];
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-export default function MonthlySalesChart({
-  data,
-}: MonthlySalesChartProps) {
+export default function MonthlySalesChart({ data, regionFilter = "GLOBAL" }: MonthlySalesChartProps) {
+    const { t } = useTranslation();
 
+    const { categories, outSeries, inSeries } = useMemo(() => {
+        const outByMonth: Record<string, number> = {};
+        const inByMonth:  Record<string, number> = {};
 
-  // const [isOpen, setIsOpen] = useState(false);
+        data.forEach(m => {
+            if (regionFilter !== "GLOBAL" && m.region_code !== regionFilter) return;
 
-  // filtro: "GLOBAL" ou um region_code (ex.: "GRU", "GIG")
-  const [regionFilter] = useState<"GLOBAL" | string>("GLOBAL");
-  const { t } = useTranslation();
+            const d     = new Date(m.created_at);
+            const key   = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
-  // Descobre quais regiões existem no response
-  // const regionCodes = useMemo(() => {
-  //   const set = new Set<string>();
-  //   data.forEach((item) => {
-  //     if (item.region_code) set.add(item.region_code);
-  //   });
-  //   return Array.from(set).sort();
-  // }, [data]);
-
-  // Processa os dados de acordo com o filtro
-  const { categories, seriesData } = useMemo(() => {
-    const totalsByMonth: Record<string, number> = {};
-
-    data.forEach((item) => {
-      if (item.type_entry !== "OUT") return;
-
-      if (regionFilter !== "GLOBAL" && item.region_code !== regionFilter) {
-        return;
-      }
-
-      const d = new Date(item.created);
-      const year = d.getFullYear();
-      const month = d.getMonth();
-      const key = `${year}-${String(month + 1).padStart(2, "0")}`;
-
-      // quantidade consumida
-      totalsByMonth[key] =
-        (totalsByMonth[key] || 0) + item.quantity;
-    });
-
-    const sortedKeys = Object.keys(totalsByMonth).sort();
-    const categories = sortedKeys.map((key) => {
-      const [year, monthStr] = key.split("-");
-      const monthIndex = Number(monthStr) - 1;
-      return `${monthShortNames[monthIndex]} ${year}`;
-    });
-
-
-    const seriesData = sortedKeys.map((key) => totalsByMonth[key]);
-
-    return { categories, seriesData };
-  }, [data, regionFilter]);
-
-  const options: ApexOptions = {
-    colors: ["#465fff"],
-    chart: {
-      fontFamily: "Outfit, sans-serif",
-      type: "bar",
-      height: 180,
-      toolbar: {
-        show: false,
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: "39%",
-        borderRadius: 5,
-        borderRadiusApplication: "end",
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      show: true,
-      width: 4,
-      colors: ["transparent"],
-    },
-    xaxis: {
-      categories,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        rotate: -30,
-        style: {
-          fontSize: "11px",
-        },
-      },
-    },
-    legend: {
-      show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Outfit",
-    },
-    yaxis: {
-      title: {
-        text: "Quantidade consumida",
-      },
-      labels: {
-        style: {
-          fontSize: "11px",
-        },
-      },
-    },
-    grid: {
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-    },
-    fill: {
-      opacity: 1,
-    },
-    tooltip: {
-      x: {
-        show: true,
-      },
-      y: {
-        formatter: (val: number) =>
-          `${val.toLocaleString("en-US")} unidades`,
-      },
- },
-  };
-
-  const series = [
-    {
-      name:
-        regionFilter === "GLOBAL"
-          ? "Consumo (Global)"
-          : `Consumo (${regionFilter})`,
-      data: seriesData,
-    },
-  ];
-
-  // function toggleDropdown() {
-  //   setIsOpen((prev) => !prev);
-  // }
-
-  // function closeDropdown() {
-  //   setIsOpen(false);
-  // }
-
-  return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/3 sm:px-6 sm:pt-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-col">
-          <h3 className="text-lg font-semibold text-gray-800">
-            {t("dashboard.monthly_consumption")}
-          </h3>
-          <p className="text-xs text-gray-500">
-            {t("dashboard.monthly_consumption_sub")}
-          </p>
-        </div>
-
-        {/* <div className="flex items-center gap-3">
-          <select
-            value={regionFilter}
-            onChange={(e) =>
-              setRegionFilter(
-                e.target.value === "GLOBAL" ? "GLOBAL" : e.target.value
-              )
+            if (m.type_entry === "OUT") {
+                outByMonth[key] = (outByMonth[key] ?? 0) + m.quantity_amended;
+            } else if (m.type_entry === "IN") {
+                inByMonth[key]  = (inByMonth[key]  ?? 0) + m.quantity_amended;
             }
-            className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
-          >
-            <option value="GLOBAL">Global</option>
-            {regionCodes.map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
+        });
 
-           <div className="relative inline-block">
-            <button className="dropdown-toggle" onClick={toggleDropdown}>
-              <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
-            </button>
-            <Dropdown
-              isOpen={isOpen}
-              onClose={closeDropdown}
-              className="w-40 p-2"
-            >
-              <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-              >
-                View More
-              </DropdownItem>
-              <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-              >
-                Delete
-              </DropdownItem>
-            </Dropdown>
-          </div> 
-        </div> */}
-      </div>
+        const allKeys = Array.from(
+            new Set([...Object.keys(outByMonth), ...Object.keys(inByMonth)])
+        ).sort();
 
-      <div className="max-w-full overflow-x-auto custom-scrollbar">
-        <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
-          <Chart options={options} series={series} type="bar" height={180} />
+        const categories = allKeys.map(key => {
+            const [year, month] = key.split("-");
+            return `${MONTH_NAMES[Number(month) - 1]} ${year}`;
+        });
+
+        return {
+            categories,
+            outSeries: allKeys.map(k => outByMonth[k] ?? 0),
+            inSeries:  allKeys.map(k => inByMonth[k]  ?? 0),
+        };
+    }, [data, regionFilter]);
+
+    const options: ApexOptions = {
+        colors: ["#465fff", "#22c55e"],
+        chart: {
+            fontFamily: "Outfit, sans-serif",
+            type: "bar",
+            height: 200,
+            toolbar: { show: false },
+            stacked: false,
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "55%",
+                borderRadius: 4,
+                borderRadiusApplication: "end",
+            },
+        },
+        dataLabels: { enabled: false },
+        stroke: { show: true, width: 3, colors: ["transparent"] },
+        xaxis: {
+            categories,
+            axisBorder: { show: false },
+            axisTicks:  { show: false },
+            labels: {
+                rotate: -30,
+                style: { fontSize: "11px" },
+            },
+        },
+        yaxis: {
+            title: { text: t("dashboard.quantity", "Quantity") },
+            labels: { style: { fontSize: "11px" } },
+        },
+        legend: {
+            show: true,
+            position: "top",
+            horizontalAlign: "left",
+            fontFamily: "Outfit",
+        },
+        grid: { yaxis: { lines: { show: true } } },
+        fill:    { opacity: 1 },
+        tooltip: {
+            x: { show: true },
+            y: {
+                formatter: (val: number) => `${val.toLocaleString("pt-BR")} ${t("dashboard.units", "units")}`,
+            },
+        },
+    };
+
+    const series = [
+        {
+            name: t("dashboard.consumed_out", "Consumed (OUT)"),
+            data: outSeries,
+        },
+        {
+            name: t("dashboard.restocked_in", "Restocked (IN)"),
+            data: inSeries,
+        },
+    ];
+
+    return (
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/3 sm:px-6 sm:pt-6">
+            <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+                    {t("dashboard.monthly_consumption", "Monthly Consumption")}
+                </h3>
+                <p className="text-xs text-gray-500">
+                    {t("dashboard.monthly_consumption_sub", "OUT vs IN per month")}
+                    {regionFilter !== "GLOBAL" && ` · ${regionFilter}`}
+                </p>
+            </div>
+            <div className="max-w-full overflow-x-auto custom-scrollbar">
+                <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
+                    <Chart options={options} series={series} type="bar" height={200} />
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

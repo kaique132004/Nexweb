@@ -11,10 +11,10 @@ type Movement = {
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity: number;
+  quantity_amended: number;
   quantity_before: number;
   quantity_after: number;
-  created: string;
+  created_at: string;
   region_id: number;
   region_code: string;
   price_unit: number;
@@ -53,7 +53,7 @@ export default function MonthlyTarget({
         return;
       }
 
-      const d = new Date(item.created);
+      const d = new Date(item.created_at);
       const year = d.getFullYear();
       const month = d.getMonth();
 
@@ -64,11 +64,11 @@ export default function MonthlyTarget({
       const isPrevious = isPrevSameYear || isPrevDecLastYear;
 
       if (isCurrent) {
-        current += item.quantity;
+        current += item.quantity_amended;
       }
 
       if (isPrevious) {
-        previous += item.quantity;
+        previous += item.quantity_amended;
       }
     });
 

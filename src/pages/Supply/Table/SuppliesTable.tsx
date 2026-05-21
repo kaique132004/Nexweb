@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DataTable, type ColumnDef, type ContextMenuAction } from "../../../shared/components/ui/table/DataTable.tsx";
+import { useColumnVisibility } from "../../../hooks/useColumnVisibility";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
 import Badge from "../../../shared/components/ui/badge/Badge.tsx";
 import SupplyRegionalPricesModal from "../SupplyRegionalPricesModal.tsx";
@@ -13,6 +14,7 @@ interface SuppliesTableProps {
 
 
 export default function SuppliesTable({ onEditSupply, refreshTrigger }: SuppliesTableProps) {
+    const { isVisible } = useColumnVisibility("supply");
     const [regionalPricesModalOpen, setRegionalPricesModalOpen] = useState(false);
     const [selectedSupply, setSelectedSupply] = useState<SupplyOption | null>(null);
     const [internalRefresh, setInternalRefresh] = useState(0);
@@ -96,11 +98,13 @@ export default function SuppliesTable({ onEditSupply, refreshTrigger }: Supplies
         },
     ];
 
+    const visibleColumns = columns.filter((col) => isVisible(col.key));
+
     return (
         <>
             <DataTable<SupplyOption>
                 endpoint={`${API_ENDPOINTS.supply}/list`}
-                columns={columns}
+                columns={visibleColumns}
                 rowKey="id"
                 refreshTrigger={refreshTrigger ?? internalRefresh}
                 contextMenuActions={contextMenuActions}

@@ -9,10 +9,10 @@ type Movement = {
   username: string;
   supply_name: string;
   supply_id: number;
-  quantity: number;
+  quantity_amended: number;
   quantity_before: number;
   quantity_after: number;
-  created: string;
+  created_at: string;
   region_id: number;
   region_code: string;
   price_unit: number;
@@ -57,17 +57,17 @@ export default function StatisticsChart({
 
     return filteredByRegion.filter((item) => {
       if (!start) return true;
-      const created = new Date(item.created);
+      const created = new Date(item.created_at);
       return created >= start && created <= now;
     });
   }, [filteredByRegion, range]);
 
   const sorted = [...filteredByRange].sort(
-    (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
   const categories = sorted.map((item) =>
-    new Date(item.created).toLocaleString("en-GB", {
+    new Date(item.created_at).toLocaleString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -77,7 +77,7 @@ export default function StatisticsChart({
   );
 
   const seriesQuantityOut = sorted.map((item) =>
-    item.type_entry === "OUT" ? item.quantity : 0
+    item.type_entry === "OUT" ? item.quantity_amended : 0
   );
 
   const seriesTotalPriceOut = sorted.map((item) =>

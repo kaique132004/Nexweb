@@ -104,7 +104,7 @@ export default function DemographicCard({
 
           const id = region.country_name;
           const prev = grouped.get(id)?.quantity ?? 0;
-          const qtyToAdd = tx.quantity ?? 0;
+          const qtyToAdd = tx.quantity_amended ?? 0;
 
           grouped.set(id, {
             label: region.country_name,
@@ -130,7 +130,7 @@ export default function DemographicCard({
           const id = region.region_code;
           const label = region.city_name || region.region_code;
           const prev = grouped.get(id)?.quantity ?? 0;
-          const qtyToAdd = tx.quantity ?? 0;
+          const qtyToAdd = tx.quantity_amended ?? 0;
 
           grouped.set(id, {
             label,

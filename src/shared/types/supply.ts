@@ -19,6 +19,7 @@ export interface RegionalPrice {
     supplier: string;
     price: number;
     quantity: number;
+    min_stock_alert: number;
 }
 
 export interface SupplyRequestSnake {

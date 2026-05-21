@@ -41,7 +41,6 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
         contains_agents_local: false,
         longitude: undefined,
         latitude: undefined,
-        min_stock_alert: 5,
       });
     }
     setSaveError(null);
@@ -74,7 +73,6 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
         contains_agents_local: formData.contains_agents_local,
         longitude: formData.longitude,
         latitude: formData.latitude,
-        min_stock_alert: formData.min_stock_alert,
       };
 
       if (region && region.region_code) {
@@ -196,17 +194,6 @@ export default function RegionFormModal({ isOpen, closeModal, region, onSaved }:
                     value={formData.responsible_name || ''}
                     onChange={(e) => handleInputChange('responsible_name', e.target.value)}
                     placeholder="e.g., John Doe"
-                    disabled={saving}
-                />
-              </div>
-              <div className="mb-4">
-                <Label>Minimum Stock Alert</Label>
-                <Input
-                    type="number"
-                    value={formData.min_stock_alert ?? 5}
-                    onChange={(e) => handleInputChange('min_stock_alert', Number(e.target.value))}
-                    placeholder="e.g., 5"
-                    required
                     disabled={saving}
                 />
               </div>

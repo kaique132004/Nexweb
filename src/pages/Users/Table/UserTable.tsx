@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { useColumnVisibility } from "../../../hooks/useColumnVisibility";
 import { DataTable, type ColumnDef, type ContextMenuAction } from "../../../shared/components/ui/table/DataTable";
 import Badge from "../../../shared/components/ui/badge/Badge";
 import { authFetch } from "../../../api/apiAuth";
 import { API_ENDPOINTS } from "../../../api/endpoint";
 import DualSelectModal from "../Form/DualSelectModal";
-import type {ApiUser} from "../../../shared/types/user.ts";
-import type {PermissionAPI} from "../../../shared/types/permission.ts";
-import {formatDate} from "../../../shared/utils/date.ts";
+import type { ApiUser } from "../../../shared/types/user.ts";
+import type { PermissionAPI } from "../../../shared/types/permission.ts";
+import { formatDate } from "../../../shared/utils/date.ts";
 
 
 
@@ -17,6 +18,7 @@ interface UserListTableProps {
 }
 
 export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNeeded }: UserListTableProps) {
+  const { isVisible } = useColumnVisibility("user");
   const [permissions, setPermissions] = useState<PermissionAPI[]>([]);
   const [regions, setRegions] = useState<Array<{ region_code: string; region_name: string }>>([]);
 
@@ -34,7 +36,7 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
         const [permsData, regionsData] = await Promise.all([
           authFetch<PermissionAPI[]>(API_ENDPOINTS.permission),
           authFetch<{ content: Array<{ region_code: string; region_name: string }> }>(
-              `${API_ENDPOINTS.region}?page=0&size=999`
+            `${API_ENDPOINTS.region}?page=0&size=999`
           ),
         ]);
         if (!cancelled) {
@@ -120,19 +122,19 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
       key: "name",
       label: "User",
       render: (user) => (
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300 shrink-0">
-              {(user.first_name?.[0] ?? "U") + (user.last_name?.[0] ?? "")}
-            </div>
-            <div>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300 shrink-0">
+            {(user.first_name?.[0] ?? "U") + (user.last_name?.[0] ?? "")}
+          </div>
+          <div>
             <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
               {user.first_name} {user.last_name}
             </span>
-              <span className="block text-gray-400 text-theme-xs">
+            <span className="block text-gray-400 text-theme-xs">
               @{user.username}
             </span>
-            </div>
           </div>
+        </div>
       ),
     },
     { key: "email", label: "Email" },
@@ -141,9 +143,9 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
       key: "is_active",
       label: "Status",
       render: (user) => (
-          <Badge size="sm" color={getStatusColor(user)}>
-            {getStatus(user)}
-          </Badge>
+        <Badge size="sm" color={getStatusColor(user)}>
+          {getStatus(user)}
+        </Badge>
       ),
     },
     {
@@ -155,7 +157,7 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
       key: "regions",
       label: "Regions",
       render: (user) => (
-          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
           {user.regions.length}
         </span>
       ),
@@ -164,12 +166,14 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
       key: "permissions",
       label: "Permissions",
       render: (user) => (
-          <span className="inline-flex items-center rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-500/10 dark:text-purple-400">
+        <span className="inline-flex items-center rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-500/10 dark:text-purple-400">
           {user.permissions.length}
         </span>
       ),
     },
   ];
+
+  const visibleColumns = columns.filter((col) => isVisible(col.key));
 
   // ─── Context menu actions ───────────────────────────────────────────────────
 
@@ -196,7 +200,17 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
     },
     {
       label: (user) => (user.is_active ? "Disable User" : "Enable User"),
-      onClick: (user) => console.log("Toggle active:", user),
+      onClick: (user) => async () => {
+        try {
+          await authFetch(`${API_ENDPOINTS.auth}/update/${user.id}`, {
+            method: "PUT",
+            body: JSON.stringify({ ...user, is_active: !user.is_active }),
+          });
+          onRefreshNeeded?.();
+        } catch (err) {
+          console.error("Error updating user status:", err);
+        }
+      },
       danger: true,
     },
     {
@@ -207,6 +221,7 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
           await authFetch(`${API_ENDPOINTS.auth}/reset-own-password/${user.id}`, {
             method: "POST",
           });
+          alert(`Password reset email sent to ${user.email}`);
         } catch (err) {
           console.error("Error resetting password:", err);
         }
@@ -216,41 +231,41 @@ export default function UserListTable({ onEditUser, refreshTrigger, onRefreshNee
   ];
 
   return (
-      <>
-        <DataTable<ApiUser>
-            endpoint={`${API_ENDPOINTS.auth}/list`}
-            columns={columns}
-            rowKey="id"
-            refreshTrigger={refreshTrigger}
-            contextMenuActions={contextMenuActions}
-            contextMenuTitle={(user) => `${user.first_name} ${user.last_name}`}
-            emptyMessage="No users found."
-            loadingMessage="Loading users..."
-        />
+    <>
+      <DataTable<ApiUser>
+        endpoint={`${API_ENDPOINTS.auth}/list`}
+        columns={visibleColumns}
+        rowKey="id"
+        refreshTrigger={refreshTrigger}
+        contextMenuActions={contextMenuActions}
+        contextMenuTitle={(user) => `${user.first_name} ${user.last_name}`}
+        emptyMessage="No users found."
+        loadingMessage="Loading users..."
+      />
 
-        <DualSelectModal
-            isOpen={isPermModalOpen}
-            onClose={() => setIsPermModalOpen(false)}
-            title="Set Permissions"
-            allOptions={permissions.map((p) => ({
-              id: String(p.permission_name),
-              label: p.permission_name,
-            }))}
-            initialSelectedIds={userPermissions}
-            onSave={(ids) => handleSavePermissions(ids as string[])}
-        />
+      <DualSelectModal
+        isOpen={isPermModalOpen}
+        onClose={() => setIsPermModalOpen(false)}
+        title="Set Permissions"
+        allOptions={permissions.map((p) => ({
+          id: String(p.permission_name),
+          label: p.permission_name,
+        }))}
+        initialSelectedIds={userPermissions}
+        onSave={(ids) => handleSavePermissions(ids as string[])}
+      />
 
-        <DualSelectModal
-            isOpen={isRegionModalOpen}
-            onClose={() => setRegionModalOpen(false)}
-            title="Set Regions"
-            allOptions={regions.map((r) => ({
-              id: r.region_code,
-              label: r.region_name,
-            }))}
-            initialSelectedIds={userRegions}
-            onSave={(ids) => handleSaveRegions(ids as string[])}
-        />
-      </>
+      <DualSelectModal
+        isOpen={isRegionModalOpen}
+        onClose={() => setRegionModalOpen(false)}
+        title="Set Regions"
+        allOptions={regions.map((r) => ({
+          id: r.region_code,
+          label: r.region_name,
+        }))}
+        initialSelectedIds={userRegions}
+        onSave={(ids) => handleSaveRegions(ids as string[])}
+      />
+    </>
   );
 }

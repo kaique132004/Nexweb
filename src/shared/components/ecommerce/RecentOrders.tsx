@@ -158,7 +158,7 @@ export default function RecentOrders() {
                     </div>
                   </TableCell>
                   <TableCell className="text-gray-500 text-theme-xs dark:text-gray-400">
-                    {tx.quantity}
+                    {tx.quantity_amended}
                   </TableCell>
                   <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     {(tx.total_price * 10).toLocaleString()}

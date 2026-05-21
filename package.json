@@ -17,7 +17,6 @@
     "@fullcalendar/timegrid": "^6.1.19",
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
-    "@stomp/stompjs": "^7.2.1",
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/vite": "^4.1.16",
     "apexcharts": "^5.3.5",

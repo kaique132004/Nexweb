@@ -11,7 +11,6 @@ export interface Region {
     contains_agents_local?: boolean;
     latitude?: number;
     longitude?: number;
-    min_stock_alert?: number;
     created_by?: string;
     created_at?: string;
 }
@@ -24,4 +23,5 @@ export interface RegionControlSupply {
     supplier: string;
     price: number;
     quantity: number;
+    min_stock_alert: number;
 }

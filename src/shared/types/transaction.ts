@@ -1,13 +1,4 @@
 // Interface para os filtros
-export interface TransactionFilters {
-    startDate?: string;
-    endDate?: string;
-    regionCode?: string;
-    supplyName?: string;
-    typeEntry?: string;
-    username?: string;
-}
-
 // Interface para o payload de export
 export interface ExportPayload {
     dateDays?: number;
@@ -33,15 +24,18 @@ export interface TransactionResponse {
     id: number;
     username: string;
     supply_name: string;
-    quantity: number;
+    supply_id: number;
+    quantity_amended: number;
     quantity_before: number;
     quantity_after: number;
     created_at: string;
+    region_id: number;
     region_code: string;
     price_unit: number;
     total_price: number;
     type_entry: string;
     obs_alter: string;
+    created_by: string;
 }
 
 export interface TransactionFilters {

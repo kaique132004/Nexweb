@@ -1,5 +1,11 @@
-// context/NotificationContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { notificationService, type Notification } from '../service/notificationService';
 
 interface NotificationContextType {
@@ -17,103 +23,72 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    // Pega o userId da sessão
     const userSession = sessionStorage.getItem('user-session');
+    if (!userSession) return;
 
-    if (userSession) {
-      try {
-        const userData = JSON.parse(userSession);
-        const userId = userData?.id || userData?.userId;
+    notificationService.connect();
 
-        console.log('User session found:', { userId, userData });
+    notificationService.getNotifications().then(setNotifications).catch(() => {});
+    notificationService.getUnreadCount().then(setUnreadCount).catch(() => {});
 
-        if (userId) {
-          // Conectar WebSocket
-          notificationService.connect(userId.toString());
+    const unsubscribe = notificationService.subscribe((notification) => {
+      setNotifications(prev => [notification, ...prev]);
+      setUnreadCount(prev => prev + 1);
 
-          // Carregar notificações existentes
-          notificationService.getNotifications()
-            .then(data => {
-              console.log('Loaded notifications:', data);
-              setNotifications(data);
-            })
-            .catch(err => console.error('Failed to load notifications:', err));
-
-          notificationService.getUnreadCount()
-            .then(count => {
-              console.log('Unread count:', count);
-              setUnreadCount(count);
-            })
-            .catch(err => console.error('Failed to load unread count:', err));
-
-          // Inscrever para novas notificações
-          const unsubscribe = notificationService.subscribe((notification) => {
-            console.log('New notification received:', notification);
-            setNotifications(prev => [notification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-
-            // Mostrar notificação do navegador
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification(notification.title, {
-                body: notification.message,
-                icon: '/logo.png',
-              });
-            }
-          });
-
-          // Pedir permissão para notificações do navegador
-          if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-          }
-
-          return () => {
-            unsubscribe();
-            notificationService.disconnect();
-          };
-        } else {
-          console.warn('No userId found in session');
-        }
-      } catch (error) {
-        console.error('Failed to parse user session:', error);
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(notification.title, {
+          body: notification.message,
+          icon: '/logo.png',
+        });
       }
-    } else {
-      console.warn('No user-session found in sessionStorage');
+    });
+
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
     }
+
+    return () => {
+      unsubscribe();
+      notificationService.disconnect();
+    };
   }, []);
 
-  const addNotification = (notification: Notification) => {
+  const addNotification = useCallback((notification: Notification) => {
     setNotifications(prev => [notification, ...prev]);
     if (!notification.is_read) {
       setUnreadCount(prev => prev + 1);
     }
-  };
+  }, []);
 
-  const markAsRead = async (id: number) => {
+  const markAsRead = useCallback(async (id: number) => {
     try {
       await notificationService.markAsRead(id);
       setNotifications(prev =>
-        prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
+        prev.map(n => (n.id === id ? { ...n, is_read: true } : n))
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Failed to mark as read:', error);
+    } catch {
+      // falha silenciosa — o estado local não é alterado
     }
-  };
+  }, []);
 
-  const markAllAsRead = async () => {
+  const markAllAsRead = useCallback(async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
+    } catch {
+      // falha silenciosa — o estado local não é alterado
     }
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({ notifications, unreadCount, addNotification, markAsRead, markAllAsRead }),
+    [notifications, unreadCount, addNotification, markAsRead, markAllAsRead]
+  );
 
   return (
-    <NotificationContext.Provider
-      value={{ notifications, unreadCount, addNotification, markAsRead, markAllAsRead }}
-    >
+    <NotificationContext.Provider value={value}>
       {children}
     </NotificationContext.Provider>
   );
@@ -122,8 +97,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
-  if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider');
-  }
+  if (!context) throw new Error('useNotifications must be used within NotificationProvider');
   return context;
 };

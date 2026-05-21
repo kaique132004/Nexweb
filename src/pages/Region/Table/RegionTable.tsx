@@ -2,6 +2,7 @@ import { DataTable, type ColumnDef } from "../../../shared/components/ui/table/D
 import { API_ENDPOINTS } from "../../../api/endpoint";
 import Button from "../../../shared/components/ui/button/Button";
 import type {Region} from "../../../shared/types/region.ts";
+import { useColumnVisibility } from "../../../hooks/useColumnVisibility";
 
 interface RegionTableProps {
     onEditRegion: (region: Region) => void;
@@ -9,6 +10,8 @@ interface RegionTableProps {
 }
 
 export default function RegionTable({ onEditRegion, refreshTrigger }: RegionTableProps) {
+    const { isVisible } = useColumnVisibility("regions");
+
     const columns: ColumnDef<Region>[] = [
         { key: "region_code", label: "Code" },
         { key: "region_name", label: "Name" },
@@ -39,10 +42,12 @@ export default function RegionTable({ onEditRegion, refreshTrigger }: RegionTabl
         },
     ];
 
+    const visibleColumns = columns.filter((col) => isVisible(col.key));
+
     return (
         <DataTable<Region>
             endpoint={API_ENDPOINTS.region}
-            columns={columns}
+            columns={visibleColumns}
             rowKey="id"
             refreshTrigger={refreshTrigger}
         />

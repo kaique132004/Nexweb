@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useColumnVisibility } from "../../hooks/useColumnVisibility";
 import { DataTable } from "../../shared/components/ui/table/DataTable";
 import type { ColumnDef, ContextMenuAction } from "../../shared/components/ui/table/DataTable";
 import Badge from "../../shared/components/ui/badge/Badge.tsx";
@@ -36,6 +37,7 @@ export default function ConsumptionsTable({
                                             refreshKey = 0,
                                             onViewDetails,
                                           }: ConsumptionsTableProps) {
+  const { isVisible } = useColumnVisibility("transactions");
 
   // Constrói a URL com os filtros como query params
   // useMemo garante que a string só muda quando filters realmente muda
@@ -85,7 +87,7 @@ export default function ConsumptionsTable({
       className: "px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400",
     },
     {
-      key: "quantity",
+      key: "quantity_amended",
       label: "Qty Amended",
       className: "px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400",
     },
@@ -129,6 +131,8 @@ export default function ConsumptionsTable({
     },
   ];
 
+  const visibleColumns = columns.filter((col) => isVisible(col.key));
+
   // ─── Context menu actions ──────────────────────────────────────────────────
 
   const contextMenuActions: ContextMenuAction<TransactionResponse>[] = [
@@ -143,7 +147,7 @@ export default function ConsumptionsTable({
   return (
       <DataTable<TransactionResponse>
           endpoint={endpoint}
-          columns={columns}
+          columns={visibleColumns}
           rowKey="id"
           refreshTrigger={refreshKey}
           contextMenuActions={contextMenuActions.length ? contextMenuActions : undefined}
