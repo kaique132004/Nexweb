@@ -36,5 +36,8 @@ export default defineConfig({
     alias: {
       './runtimeConfig': './runtimeConfig.browser',
     }
-  }
+  },
+  optimizeDeps: {
+    include: ['jspdf', 'jspdf-autotable'],
+  },
 })

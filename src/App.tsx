@@ -33,6 +33,7 @@ const FirstLoginPage = lazy(() => import("./pages/AuthPages/FirstLoginPage"));
 const GenQR = lazy(() => import("./pages/QRcode/GenQR"));
 const ConsumptionPage = lazy(() => import("./pages/Consumptions/ConsumptionPage"));
 const TwoFactorAuthPage = lazy(() => import("./pages/AuthPages/TwoFactorAuthPage"));
+const SystemStatusPage  = lazy(() => import("./pages/Admin/SystemStatusPage"));
 
 function PageLoader() {
   return (
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="/transaction-list" element={<TransactionList />} />
             <Route path="/qrcode" element={<GenQR />} />
             <Route path="/register-consumption" element={<ConsumptionPage />} />
+            <Route path="/admin/system" element={<SystemStatusPage />} />
           </Route>
           {/* Auth Layout */}
           <Route path="/2fa" element={<TwoFactorAuthPage />} />

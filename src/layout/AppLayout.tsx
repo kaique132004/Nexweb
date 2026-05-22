@@ -21,7 +21,7 @@ const LayoutContent: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="min-h-screen xl:flex bg-gray-50 dark:bg-[#0d1117] transition-colors duration-200">
       <div>
         <AppSidebar />
         <Backdrop />

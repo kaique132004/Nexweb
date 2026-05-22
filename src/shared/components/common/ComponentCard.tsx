@@ -22,7 +22,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     <div
       className={cn(
         "rounded-2xl border border-gray-200 bg-white",
-        "dark:border-gray-800 dark:bg-white/3",
+        "dark:border-[#21262d] dark:bg-[#161b22]",
         className
       )}
     >

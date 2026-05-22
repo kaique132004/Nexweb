@@ -50,8 +50,15 @@ export default function GenQR() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const suppliesRes = await authFetch<SupplyOption[]>(`${API_ENDPOINTS.supply}/list`);
-        setSupplies(suppliesRes ?? []);
+        // O backend retorna uma Page do Spring: { content: [...], totalElements, ... }
+        // Pedimos tamanho grande para trazer todos os supplies sem paginar
+        const suppliesRes = await authFetch<{ content: SupplyOption[] } | SupplyOption[]>(
+          `${API_ENDPOINTS.supply}/list?size=1000&sort=supplyName,asc`
+        );
+        const suppliesList = Array.isArray(suppliesRes)
+          ? suppliesRes
+          : (suppliesRes as { content: SupplyOption[] })?.content ?? [];
+        setSupplies(suppliesList);
       } catch (err: any) {
         console.error("Error loading data:", err);
         setError(err?.response?.data?.message ?? "Error loading data");
@@ -176,14 +183,30 @@ export default function GenQR() {
     setFieldErrors({});
   };
 
+  // ─── select base classes ─────────────────────────────────────────────────────
+  const selectCls = (hasError?: boolean) =>
+    [
+      "w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors",
+      "bg-white text-gray-800 border-gray-300",
+      "dark:bg-[#0d1117] dark:text-white/90 dark:border-[#30363d]",
+      "focus:border-brand-400 focus:ring-2 focus:ring-brand-500/10",
+      "dark:focus:border-brand-700",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      hasError ? "border-red-500 dark:border-red-600" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+  const optionCls = "bg-white dark:bg-[#161b22] text-gray-800 dark:text-white";
+
   if (loading) {
     return (
       <>
         <PageMeta title="Generate QRCode | Nexventory" description="Generate QRCode" />
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+            <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">Loading supplies…</p>
           </div>
         </div>
       </>
@@ -195,144 +218,146 @@ export default function GenQR() {
       <PageMeta title="Generate QRCode | Nexventory" description="Generate QRCode to register consumption" />
       <PageBreadcrumb pageTitle="QRCode Generator" />
 
-      <div className="min-h-screen bg-gray-50  p-4 pb-8">
-        <div className="mx-auto max-w-2xl">
+      <div className="p-4 pb-8">
+        <div className="mx-auto max-w-2xl space-y-5">
+
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">
               Generate QR Code
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Create a QR Code to quickly access consumption registration
             </p>
           </div>
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+            <div className="p-3.5 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg">
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
-            <div className="space-y-5">
-              {/* Supply */}
-              <div>
-                <Label>Supply</Label>
-                <select
-                  className={`w-full rounded-md border p-3 text-sm dark:text-white outline-none bg-transparent border-slate-600 ${
-                    fieldErrors.supply_id ? "border-red-500" : ""
-                  }`}
-                  value={form.supply_id}
-                  onChange={handleChange("supply_id")}
-                >
-                  <option value="">Select supply</option>
-                  {supplies.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-slate-900 dark:text-white">
-                      {s.supply_name}
-                    </option>
-                  ))}
-                </select>
-                {fieldErrors.supply_id && (
-                  <p className="mt-1 text-xs text-red-500">{fieldErrors.supply_id}</p>
-                )}
-              </div>
+          {/* Form card */}
+          <div className="rounded-2xl border border-gray-200 dark:border-[#21262d] bg-white dark:bg-[#161b22] p-6 shadow-sm">
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-5">
 
-              {/* Region */}
-              <div>
-                <Label>Region</Label>
-                <select
-                  className={`w-full rounded-md border p-3 text-sm dark:text-white outline-none bg-transparent border-slate-600 ${
-                    fieldErrors.region_id ? "border-red-500" : ""
-                  }`}
-                  value={form.region_id}
-                  onChange={handleChange("region_id")}
-                  disabled={!form.supply_id}
-                >
-                  <option value="">
-                    {!form.supply_id ? "Select supply first" : "Select region"}
-                  </option>
-                  {availableRegions.map((r) => (
-                    <option key={r.id} value={r.id} className="bg-slate-900 dark:text-white">
-                      {r.region_code} - {r.supplier} (${r.price})
+                {/* Supply */}
+                <div>
+                  <Label>Supply</Label>
+                  <select
+                    className={selectCls(!!fieldErrors.supply_id)}
+                    value={form.supply_id}
+                    onChange={handleChange("supply_id")}
+                  >
+                    <option value="" className={optionCls}>Select supply</option>
+                    {supplies.map((s) => (
+                      <option key={s.id} value={s.id} className={optionCls}>
+                        {s.supply_name}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.supply_id && (
+                    <p className="mt-1 text-xs text-red-500">{fieldErrors.supply_id}</p>
+                  )}
+                </div>
+
+                {/* Region */}
+                <div>
+                  <Label>Region</Label>
+                  <select
+                    className={selectCls(!!fieldErrors.region_id)}
+                    value={form.region_id}
+                    onChange={handleChange("region_id")}
+                    disabled={!form.supply_id}
+                  >
+                    <option value="" className={optionCls}>
+                      {!form.supply_id ? "Select a supply first" : "Select region"}
                     </option>
-                  ))}
-                </select>
-                {fieldErrors.region_id && (
-                  <p className="mt-1 text-xs text-red-500">{fieldErrors.region_id}</p>
-                )}
-                {form.supply_id && availableRegions.length === 0 && (
-                  <p className="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
-                    No regions available for this supply
+                    {availableRegions.map((r) => (
+                      <option key={r.id} value={r.id} className={optionCls}>
+                        {r.region_code} — {r.supplier} (${r.price})
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.region_id && (
+                    <p className="mt-1 text-xs text-red-500">{fieldErrors.region_id}</p>
+                  )}
+                  {form.supply_id && availableRegions.length === 0 && (
+                    <p className="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
+                      No regions configured for this supply
+                    </p>
+                  )}
+                </div>
+
+                {/* Type */}
+                <div>
+                  <Label>Type <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span></Label>
+                  <select
+                    className={selectCls()}
+                    value={form.type_entry}
+                    onChange={handleChange("type_entry")}
+                  >
+                    <option value="" className={optionCls}>Not specified</option>
+                    <option value="IN"  className={optionCls}>Entry (IN)</option>
+                    <option value="OUT" className={optionCls}>Exit (OUT)</option>
+                  </select>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    Leave empty to let the user choose at registration time
                   </p>
-                )}
+                </div>
               </div>
 
-              {/* Type - Optional */}
-              <div>
-                <Label>Type (Optional)</Label>
-                <select
-                  className="w-full rounded-md border p-3 text-sm dark:text-white outline-none bg-transparent border-slate-600"
-                  value={form.type_entry}
-                  onChange={handleChange("type_entry")}
-                >
-                  <option value="" className="bg-slate-900 dark:text-white">
-                    Not specified
-                  </option>
-                  <option value="IN" className="bg-slate-900 dark:text-white">
-                    Entry
-                  </option>
-                  <option value="OUT" className="bg-slate-900 dark:text-white">
-                    Exit
-                  </option>
-                </select>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Leave empty to let user choose on registration
-                </p>
+              <div className="mt-6">
+                <Button type="submit" className="w-full">
+                  Generate QR Code
+                </Button>
               </div>
-            </div>
+            </form>
+          </div>
 
-            {/* Generate Button */}
-            <div className="mt-6">
-              <Button type="submit" className="w-full py-3 text-base font-medium">
-                Generate QR Code
-              </Button>
-            </div>
-          </form>
-
-          {/* QR Code Display */}
+          {/* QR Code result */}
           {showQR && (
-            <div className="mt-6 bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+            <div className="rounded-2xl border border-gray-200 dark:border-[#21262d] bg-white dark:bg-[#161b22] p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-800 dark:text-white/90 mb-5 text-center">
                 Your QR Code
               </h2>
 
-              <div className="flex flex-col items-center space-y-4">
-                <div className="bg-white p-4 rounded-lg">
+              <div className="flex flex-col items-center gap-5">
+                {/* Canvas em container branco para o QR sempre legível */}
+                <div className="rounded-xl bg-white p-4 shadow-sm border border-gray-100">
                   <canvas ref={canvasRef} />
                 </div>
 
-                <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  <p>Supply: {supplies.find((s) => s.id === Number(form.supply_id))?.supply_name}</p>
-                  <p>Region: {availableRegions.find((r) => r.id === Number(form.region_id))?.region_code}</p>
-                  <p>Type: {form.type_entry ? (form.type_entry === "IN" ? "Entry" : "Exit") : "Not specified"}</p>
+                {/* Resumo */}
+                <div className="w-full rounded-lg bg-gray-50 dark:bg-[#0d1117] border border-gray-100 dark:border-[#21262d] px-4 py-3 space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Supply</span>
+                    <span className="font-medium text-gray-800 dark:text-white/90">
+                      {supplies.find((s) => s.id === Number(form.supply_id))?.supply_name ?? "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Region</span>
+                    <span className="font-medium text-gray-800 dark:text-white/90">
+                      {availableRegions.find((r) => r.id === Number(form.region_id))?.region_code ?? "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Type</span>
+                    <span className="font-medium text-gray-800 dark:text-white/90">
+                      {form.type_entry ? (form.type_entry === "IN" ? "Entry" : "Exit") : "Not specified"}
+                    </span>
+                  </div>
                 </div>
 
+                {/* Actions */}
                 <div className="flex gap-3 w-full">
-                  <Button
-                    type="button"
-                    onClick={downloadQRCode}
-                    className="flex-1 py-3 text-base font-medium"
-                  >
-                    Download QR Code
+                  <Button type="button" onClick={downloadQRCode} className="flex-1">
+                    Download PNG
                   </Button>
-                  <Button
-                    type="button"
-                    onClick={resetForm}
-                    variant="outline"
-                    className="flex-1 py-3 text-base font-medium"
-                  >
+                  <Button type="button" onClick={resetForm} variant="outline" className="flex-1">
                     Generate New
                   </Button>
                 </div>

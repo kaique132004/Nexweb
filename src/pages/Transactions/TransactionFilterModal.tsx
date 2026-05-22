@@ -56,7 +56,7 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
       onClick={closeModal}
     >
       <div
-        className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-800 dark:bg-gray-900"
+        className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-[#21262d] dark:bg-[#161b22]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import BugReportModal from "../components/BugReportModal";
 
 import {
   ChevronDownIcon,
@@ -12,6 +13,14 @@ import {
   QRCodeIcon,
 } from "../assets/icons";
 import { useSidebar } from "../context/SidebarContext";
+
+// ── Admin icon (shield) ──────────────────────────────────────────────────────
+const ShieldIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+      d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+  </svg>
+);
 
 type SubItem = { 
   name: string; 
@@ -74,6 +83,13 @@ const getItemsByType = (type: MenuType) =>
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const [isBugReportOpen, setIsBugReportOpen] = useState(false);
+
+  // Determine if the current user is admin-level
+  const userSession = (() => {
+    try { return JSON.parse(sessionStorage.getItem("user-session") ?? "{}"); } catch { return {}; }
+  })();
+  const isAdmin = userSession?.role === "ROLE_MASTER" || userSession?.role === "ROLE_MANAGER";
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: MenuType;
@@ -271,7 +287,7 @@ const AppSidebar: React.FC = () => {
     <aside
       className={`
         fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 
-        bg-[#2B3E2B] dark:bg-[#1e1e1e] dark:border-gray-800 
+        bg-[#2B3E2B] dark:bg-[#1e1e1e]
         text-white h-screen transition-all duration-300 ease-in-out 
         z-50 border-r border-[#4c3de3]
         ${isSidebarOpen ? "w-[290px]" : "w-[90px]"}
@@ -351,6 +367,41 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>
+
+            {/* Admin section — only MASTER / MANAGER */}
+            {isAdmin && (
+              <div>
+                <h2
+                  className={`
+                    mb-4 text-xs uppercase flex leading-5 text-white/60
+                    ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}
+                  `}
+                >
+                  {isSidebarOpen ? "Admin" : <HorizontaLDots className="size-6" />}
+                </h2>
+                <ul className="flex flex-col gap-4">
+                  <li>
+                    <Link
+                      to="/admin/system"
+                      className={`menu-item group ${
+                        isActive("/admin/system") ? "menu-item-active" : "menu-item-inactive"
+                      }`}
+                    >
+                      <span
+                        className={`menu-item-icon-size ${
+                          isActive("/admin/system") ? "menu-item-icon-active" : "menu-item-icon-inactive"
+                        }`}
+                      >
+                        <ShieldIcon className="w-6 h-6" />
+                      </span>
+                      {isSidebarOpen && (
+                        <span className="menu-item-text">System Status</span>
+                      )}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </nav>
       </div>
@@ -359,28 +410,18 @@ const AppSidebar: React.FC = () => {
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 bg-[#2B3E2B] dark:bg-[#1e1e1e] border-t border-[#4c3de3]/30">
         {isSidebarOpen ? (
           <div className="flex flex-col gap-3 pt-4">
-            {/* Botão de Report */}
-            <Link
-              to="/report"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            <button
+              type="button"
+              onClick={() => setIsBugReportOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors w-full text-left"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <span>Report Bug / Suggestion</span>
-            </Link>
+            </button>
 
-            {/* Copyright */}
             <div className="text-xs text-white/50 text-center">
               © {new Date().getFullYear()} Araxios
               <br />
@@ -388,33 +429,29 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         ) : (
-          // Versão colapsada - apenas ícone
           <div className="flex flex-col items-center gap-3 pt-4">
-            <Link
-              to="/report"
-              className="p-2 text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            <button
+              type="button"
+              onClick={() => setIsBugReportOpen(true)}
               title="Report Bug / Suggestion"
+              className="p-2 text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-            </Link>
+            </button>
             <div className="text-[10px] text-white/50 text-center">
               © {new Date().getFullYear()}
             </div>
           </div>
         )}
       </div>
+
+      <BugReportModal
+        isOpen={isBugReportOpen}
+        onClose={() => setIsBugReportOpen(false)}
+      />
     </aside>
   );
 };

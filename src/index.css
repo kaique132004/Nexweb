@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap")
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap")
 layer(base);
 
 @import "tailwindcss";
@@ -7,7 +7,7 @@ layer(base);
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-inter: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -79,7 +79,7 @@ layer(base);
   --color-gray-800: #1d2939;
   --color-gray-900: #101828;
   --color-gray-950: #0c111d;
-  --color-gray-dark: #1a2231;
+  --color-gray-dark: #0d1117;
 
   --color-orange-25: #fffaf5;
   --color-orange-50: #fff6ed;
@@ -186,7 +186,25 @@ layer(base);
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative font-normal font-inter z-1 bg-gray-50 dark:bg-[#0d1117];
+  }
+
+  /* ── Dark mode token overrides ──────────────────────────────────────────────
+     Redefine as CSS vars apenas dentro de .dark (aplicado em <html>).
+     Tokens de texto do light mode (text-gray-700 etc.) herdam o mesmo valor
+     mas só são usados fora de contextos dark — sem colisão.
+  ── */
+  .dark {
+    /* página / modais / dropdowns */
+    --color-gray-900: #0d1117;
+    /* cards, inputs, botões outline, paginação */
+    --color-gray-800: #161b22;
+    /* sidebar e datepicker (camada mais funda) */
+    --color-gray-dark: #090c11;
+    /* bordas, divisores, separadores */
+    --color-gray-700: #21262d;
+    /* hover state suave */
+    --color-gray-600: #30363d;
   }
 }
 

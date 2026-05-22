@@ -175,11 +175,11 @@ export function DataTable<T extends object>({
     // ─── Render ────────────────────────────────────────────────────────────────
 
     return (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-black/5 dark:bg-white/3">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-[#21262d] dark:bg-[#161b22]">
             <div className="max-w-full overflow-x-auto">
                 <Table>
                     {/* Header */}
-                    <TableHeader className="border-b border-gray-100 dark:border-white/5">
+                    <TableHeader className="border-b border-gray-100 dark:border-[#21262d]">
                         <TableRow>
                             {columns.map((col) => (
                                 <TableCell
