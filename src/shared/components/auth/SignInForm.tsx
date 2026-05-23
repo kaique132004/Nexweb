@@ -210,14 +210,12 @@ export default function SignInForm() {
     };
 
     return (
-        <div className="flex flex-col flex-1">
-            <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-                <div>
+        <div>
                     <div className="mb-5 sm:mb-8">
-                        <h1 className="mb-2 font-semibold text-[#2B3E2B] text-title-sm dark:text-white sm:text-title-md">
+                        <h1 className="mb-2 font-semibold text-[#1a3552] text-title-sm dark:text-white sm:text-title-md">
                             Sign In
                         </h1>
-                        <p className="text-sm text-[#2B3E2B] dark:text-gray-400">
+                        <p className="text-sm text-[#1a3552] dark:text-gray-400">
                             Enter your username and password to sign in!
                         </p>
                     </div>
@@ -286,9 +284,9 @@ export default function SignInForm() {
                                         tabIndex={-1}
                                     >
                                         {showPassword ? (
-                                            <EyeIcon className="fill-[#2B3E2B] dark:fill-[#bbe8ee] size-5"/>
+                                            <EyeIcon className="fill-[#1a3552] dark:fill-[#bbe8ee] size-5"/>
                                         ) : (
-                                            <EyeCloseIcon className="fill-[#2B3E2B] dark:fill-cyan-400 size-5"/>
+                                            <EyeCloseIcon className="fill-[#1a3552] dark:fill-cyan-400 size-5"/>
                                         )}
                                     </button>
                                 </div>
@@ -302,13 +300,13 @@ export default function SignInForm() {
                                         disabled={loading}
                                         aria-label="Keep me logged in"
                                     />
-                                    <span className="block font-normal text-[#2B3E2B] text-theme-sm dark:text-cyan-300">
+                                    <span className="block font-normal text-[#1a3552] text-theme-sm dark:text-cyan-300">
                     Keep me logged in
                   </span>
                                 </div>
                                 <Link
                                     to="/forgot-password"
-                                    className="text-sm text-[#2B3E2B] hover:text-teal-700 dark:text-[#bbe8ee] dark:hover:text-cyan-300 transition-colors"
+                                    className="text-sm text-[#1a3552] hover:text-teal-700 dark:text-[#bbe8ee] dark:hover:text-cyan-300 transition-colors"
                                     tabIndex={loading ? -1 : 0}
                                 >
                                     Forgot password?
@@ -319,7 +317,7 @@ export default function SignInForm() {
                                 <button
                                     type="submit"
                                     disabled={loading || !isFormValid}
-                                    className="w-full bg-[#2b3e2b] hover:bg-[#2b3e2bd7] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                                    className="w-full bg-[#1a3552] hover:bg-[#2a5080] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -337,8 +335,6 @@ export default function SignInForm() {
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
         </div>
     );
 }

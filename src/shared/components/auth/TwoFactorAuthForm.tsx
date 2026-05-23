@@ -131,18 +131,15 @@ export default function TwoFactorAuthForm() {
 
     // ... (restante do componente)
     return (
-        <div className="flex flex-col flex-1"> {/* Contêiner principal como no ForgotPassForm */}
-            <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto"> {/* Contêiner de centralização e largura máxima */}
-                <div>
+        <div>
                     <div className="mb-5 sm:mb-8"> {/* Espaçamento para o título */}
-                        <h1 className="mb-2 font-semibold text-[#2B3E2B] text-title-sm dark:text-white sm:text-title-md"> {/* Título como no ForgotPassForm */}
+                        <h1 className="mb-2 font-semibold text-[#1a3552] text-title-sm dark:text-white sm:text-title-md"> {/* Título como no ForgotPassForm */}
                             Two-Factor Authentication
                         </h1>
-                        <p className="text-sm text-[#2B3E2B] dark:text-gray-400"> {/* Descrição como no ForgotPassForm */}
+                        <p className="text-sm text-[#1a3552] dark:text-gray-400"> {/* Descrição como no ForgotPassForm */}
                             Please enter the 6-digit code from your authenticator app.
                         </p>
                     </div>
-                </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-6">
@@ -178,7 +175,7 @@ export default function TwoFactorAuthForm() {
                             <button
                                 type="submit"
                                 disabled={loading || code.trim().length !== 6}
-                                className="w-full bg-[#2b3e2b] hover:bg-[#2b3e2bd7] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#1a3552] hover:bg-[#2a5080] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? "Verifying..." : "Verify Code"}
                             </button>
@@ -188,7 +185,7 @@ export default function TwoFactorAuthForm() {
                             <button
                                 type="button"
                                 onClick={() => navigate("/signin", { replace: true })}
-                                className="text-sm text-[#2b3e2b] dark:text-[#4c3de3] hover:underline"
+                                className="text-sm text-[#1a3552] dark:text-[#4c3de3] hover:underline"
                                 disabled={loading}
                             >
                                 Back to Login
@@ -196,7 +193,6 @@ export default function TwoFactorAuthForm() {
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     );
 }

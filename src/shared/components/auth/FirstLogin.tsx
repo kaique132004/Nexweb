@@ -168,14 +168,12 @@ export default function FirstLogin() {
           : "Set your new password";
 
   return (
-      <div className="flex flex-1 flex-col">
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-          <div>
+      <div>
             <div className="mb-5 sm:mb-8">
-              <h1 className="mb-2 text-title-sm font-semibold text-[#2B3E2B] dark:text-white sm:text-title-md">
+              <h1 className="mb-2 text-title-sm font-semibold text-[#1a3552] dark:text-white sm:text-title-md">
                 {title}
               </h1>
-              <p className="text-sm text-[#2B3E2B] dark:text-gray-400">
+              <p className="text-sm text-[#1a3552] dark:text-gray-400">
                 {infoMessage ??
                     "A reset code was sent to your email. Enter it below along with your new password."}
               </p>
@@ -245,9 +243,9 @@ export default function FirstLogin() {
                             tabIndex={-1}
                         >
                           {showPassword ? (
-                              <EyeIcon className="size-5 fill-[#2B3E2B] dark:fill-[#bbe8ee]" />
+                              <EyeIcon className="size-5 fill-[#1a3552] dark:fill-[#bbe8ee]" />
                           ) : (
-                              <EyeCloseIcon className="size-5 fill-[#2B3E2B] dark:fill-cyan-400" />
+                              <EyeCloseIcon className="size-5 fill-[#1a3552] dark:fill-cyan-400" />
                           )}
                         </button>
                       </div>
@@ -284,9 +282,9 @@ export default function FirstLogin() {
                             tabIndex={-1}
                         >
                           {showPasswordConfirm ? (
-                              <EyeIcon className="size-5 fill-[#2B3E2B] dark:fill-[#bbe8ee]" />
+                              <EyeIcon className="size-5 fill-[#1a3552] dark:fill-[#bbe8ee]" />
                           ) : (
-                              <EyeCloseIcon className="size-5 fill-[#2B3E2B] dark:fill-cyan-400" />
+                              <EyeCloseIcon className="size-5 fill-[#1a3552] dark:fill-cyan-400" />
                           )}
                         </button>
                       </div>
@@ -296,7 +294,7 @@ export default function FirstLogin() {
                       <button
                           type="submit"
                           disabled={isSubmitDisabled}
-                          className="w-full rounded-lg bg-[#2b3e2b] py-2.5 font-medium text-white transition-all hover:bg-[#2b3e2bd7] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0]"
+                          className="w-full rounded-lg bg-[#1a3552] py-2.5 font-medium text-white transition-all hover:bg-[#2a5080] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0]"
                       >
                         {loading ? (
                             <span className="flex items-center justify-center gap-2">
@@ -317,7 +315,7 @@ export default function FirstLogin() {
                       <button
                           type="button"
                           onClick={() => navigate("/signin", { replace: true })}
-                          className="text-[#2B3E2B] underline hover:text-teal-700 dark:text-[#bbe8ee] dark:hover:text-cyan-300"
+                          className="text-[#1a3552] underline hover:text-teal-700 dark:text-[#bbe8ee] dark:hover:text-cyan-300"
                       >
                         Go back and sign in again
                       </button>
@@ -325,8 +323,6 @@ export default function FirstLogin() {
                   </div>
                 </form>
             )}
-          </div>
-        </div>
       </div>
   );
 }

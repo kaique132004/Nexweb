@@ -7,7 +7,7 @@ import { authFetch } from "../../../api/apiAuth.ts";
 import { API_ENDPOINTS } from "../../../api/endpoint.ts";
 import type { UserDetail } from "../../types/user.ts";
 
-const FALLBACK_AVATAR = "/assets/SITA_LOGO-AVATAR-GREEN.png"; // ajuste o caminho
+const FALLBACK_AVATAR = "/assets/user-interface-solid-icon-set-vector.jpg"; // ajuste o caminho
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);

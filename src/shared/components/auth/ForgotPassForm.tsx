@@ -81,18 +81,15 @@ export default function ForgotPassForm() {
 
 
     return (
-        <div className="flex flex-col flex-1">
-            <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-                <div>
+        <div>
                     <div className="mb-5 sm:mb-8">
-                        <h1 className="mb-2 font-semibold text-[#2B3E2B] text-title-sm dark:text-white sm:text-title-md">
+                        <h1 className="mb-2 font-semibold text-[#1a3552] text-title-sm dark:text-white sm:text-title-md">
                             Forgot your password?
                         </h1>
-                        <p className="text-sm text-[#2B3E2B] dark:text-gray-400">
+                        <p className="text-sm text-[#1a3552] dark:text-gray-400">
                             Enter your email to reset!
                         </p>
                     </div>
-                </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-6">
@@ -129,7 +126,7 @@ export default function ForgotPassForm() {
                             <button
                                 type="submit"
                                 disabled={loading || !email.trim()}
-                                className="w-full bg-[#2b3e2b] hover:bg-[#2b3e2bd7] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#1a3552] hover:bg-[#2a5080] text-white dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0] py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? "Sending..." : "Send Code"}
                             </button>
@@ -140,7 +137,7 @@ export default function ForgotPassForm() {
                             <button
                                 type="button"
                                 onClick={() => navigate("/login")}
-                                className="text-sm text-[#2b3e2b] dark:text-[#4c3de3] hover:underline"
+                                className="text-sm text-[#1a3552] dark:text-[#4c3de3] hover:underline"
                                 disabled={loading}
                             >
                                 Back to Login
@@ -148,7 +145,6 @@ export default function ForgotPassForm() {
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     );
 }

@@ -192,22 +192,18 @@ export default function TwoFactorAuthSettings({
                         </div>
                     ) : (
                         <div className="px-2 pb-3">
-                            {error && (
-                                <p className="mb-4 text-sm text-red-500">{error}</p>
-                            )}
-                            {successMessage && (
-                                <p className="mb-4 text-sm text-green-500">{successMessage}</p>
-                            )}
-
+                            {/* Estado inicial: 2FA desabilitado, secret não gerado */}
                             {!twoFactorEnabled && !secretConfigured && (
-                                // Estado inicial: 2FA desabilitado, secret não gerado
                                 <div className="space-y-4">
+                                    {error && (
+                                        <p className="text-sm text-red-500">{error}</p>
+                                    )}
                                     <p className="text-sm text-gray-700 dark:text-gray-300">
                                         Click "Generate QR Code" to start setting up 2FA.
                                     </p>
                                     <Button
                                         onClick={handleGenerateQrCode}
-                                        disabled={saving}
+                                        disabled={loading || saving}
                                         className="w-full"
                                     >
                                         {loading ? "Generating..." : "Generate QR Code"}
@@ -215,9 +211,65 @@ export default function TwoFactorAuthSettings({
                                 </div>
                             )}
 
+                            {/* Secret gerado mas QR não disponível (ex: já escaneado antes) */}
+                            {!twoFactorEnabled && secretConfigured && !qrCodeImageUrl && (
+                                <div className="space-y-4">
+                                    {error && (
+                                        <p className="text-sm text-red-500">{error}</p>
+                                    )}
+                                    {successMessage && (
+                                        <p className="text-sm text-green-500">{successMessage}</p>
+                                    )}
+                                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                                        A secret is already configured. Enter the code from your authenticator app, or generate a new QR code.
+                                    </p>
+                                    <Label htmlFor="verificationCode" className="block text-left">
+                                        Enter 6-digit code from app
+                                    </Label>
+                                    <Input
+                                        id="verificationCode"
+                                        type="text"
+                                        value={verificationCode}
+                                        onChange={(e) => {
+                                            setVerificationCode(e.target.value);
+                                            if (error) setError(null);
+                                        }}
+                                        placeholder="e.g., 123456"
+                                        disabled={saving}
+                                        className="text-center tracking-widest"
+                                    />
+                                    <Button
+                                        onClick={handleEnableTwoFactor}
+                                        disabled={saving || verificationCode.length !== 6}
+                                        className="w-full"
+                                    >
+                                        {saving ? "Enabling..." : "Enable 2FA"}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleGenerateQrCode}
+                                        disabled={loading || saving}
+                                        className="w-full"
+                                    >
+                                        {loading ? "Generating..." : "Generate new QR Code"}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleCloseModal}
+                                        disabled={saving}
+                                        className="w-full"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Secret gerado, QR disponível — aguardando verificação */}
                             {!twoFactorEnabled && secretConfigured && qrCodeImageUrl && (
-                                // Estado: Secret gerado, esperando verificação
                                 <div className="space-y-4 text-center">
+                                    {successMessage && (
+                                        <p className="text-sm text-green-500">{successMessage}</p>
+                                    )}
                                     <p className="text-sm text-gray-700 dark:text-gray-300">
                                         Scan the QR code below with your authenticator app (e.g., Google Authenticator, Authy).
                                     </p>
@@ -231,11 +283,17 @@ export default function TwoFactorAuthSettings({
                                         id="verificationCode"
                                         type="text"
                                         value={verificationCode}
-                                        onChange={(e) => setVerificationCode(e.target.value)}
+                                        onChange={(e) => {
+                                            setVerificationCode(e.target.value);
+                                            if (error) setError(null);
+                                        }}
                                         placeholder="e.g., 123456"
                                         disabled={saving}
                                         className="text-center tracking-widest"
                                     />
+                                    {error && (
+                                        <p className="text-sm text-red-500 text-left">{error}</p>
+                                    )}
                                     <Button
                                         onClick={handleEnableTwoFactor}
                                         disabled={saving || verificationCode.length !== 6}
@@ -254,9 +312,12 @@ export default function TwoFactorAuthSettings({
                                 </div>
                             )}
 
+                            {/* 2FA habilitado — opção de desabilitar */}
                             {twoFactorEnabled && (
-                                // Estado: 2FA habilitado, opção de desabilitar
                                 <div className="space-y-4">
+                                    {successMessage && (
+                                        <p className="text-sm text-green-500">{successMessage}</p>
+                                    )}
                                     <p className="text-sm text-gray-700 dark:text-gray-300">
                                         Two-Factor Authentication is currently enabled. To disable it, enter a verification code from your authenticator app.
                                     </p>
@@ -267,11 +328,17 @@ export default function TwoFactorAuthSettings({
                                         id="verificationCodeDisable"
                                         type="text"
                                         value={verificationCode}
-                                        onChange={(e) => setVerificationCode(e.target.value)}
+                                        onChange={(e) => {
+                                            setVerificationCode(e.target.value);
+                                            if (error) setError(null);
+                                        }}
                                         placeholder="e.g., 123456"
                                         disabled={saving}
                                         className="text-center tracking-widest"
                                     />
+                                    {error && (
+                                        <p className="text-sm text-red-500">{error}</p>
+                                    )}
                                     <Button
                                         onClick={handleDisableTwoFactor}
                                         disabled={saving || verificationCode.length !== 6}

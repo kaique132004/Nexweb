@@ -70,18 +70,15 @@ export default function RedefinePassForm() {
   };
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-        <div>
+    <div>
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 text-title-sm font-semibold text-[#2B3E2B] dark:text-white sm:text-title-md">
+            <h1 className="mb-2 text-title-sm font-semibold text-[#1a3552] dark:text-white sm:text-title-md">
               Redefine your password
             </h1>
-            <p className="text-sm text-[#2B3E2B] dark:text-gray-400">
+            <p className="text-sm text-[#1a3552] dark:text-gray-400">
               Enter your email, the code sent to you and your new password.
             </p>
           </div>
-        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
@@ -133,9 +130,9 @@ export default function RedefinePassForm() {
                   className="absolute right-4 top-1/2 z-30 -translate-y-1/2 cursor-pointer"
                 >
                   {showPassword ? (
-                    <EyeIcon className="size-5 fill-[#2B3E2B] dark:fill-[#bbe8ee]" />
+                    <EyeIcon className="size-5 fill-[#1a3552] dark:fill-[#bbe8ee]" />
                   ) : (
-                    <EyeCloseIcon className="size-5 fill-[#2B3E2B] dark:fill-cyan-400" />
+                    <EyeCloseIcon className="size-5 fill-[#1a3552] dark:fill-cyan-400" />
                   )}
                 </span>
               </div>
@@ -162,9 +159,9 @@ export default function RedefinePassForm() {
                   className="absolute right-4 top-1/2 z-30 -translate-y-1/2 cursor-pointer"
                 >
                   {showPasswordConfirm ? (
-                    <EyeIcon className="size-5 fill-[#2B3E2B] dark:fill-[#bbe8ee]" />
+                    <EyeIcon className="size-5 fill-[#1a3552] dark:fill-[#bbe8ee]" />
                   ) : (
-                    <EyeCloseIcon className="size-5 fill-[#2B3E2B] dark:fill-cyan-400" />
+                    <EyeCloseIcon className="size-5 fill-[#1a3552] dark:fill-cyan-400" />
                   )}
                 </span>
               </div>
@@ -187,14 +184,13 @@ export default function RedefinePassForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-[#2b3e2b] py-2 text-white transition-all hover:bg-[#2b3e2bd7] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0]"
+                className="w-full rounded-lg bg-[#1a3552] py-2 text-white transition-all hover:bg-[#2a5080] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#4c3de3] dark:hover:bg-[#4b3de3c0]"
               >
                 {loading ? "Sending..." : "Redefine Password"}
               </button>
             </div>
           </div>
         </form>
-      </div>
     </div>
   );
 }

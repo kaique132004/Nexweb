@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "PowerShell(Get-ChildItem -Path \"C:\\\\Projetos\\\\Nexweb\" -Force | Select-Object Name, @{Name=\"Type\"; Expression={if\\($_.PSIsContainer\\){\"Directory\"}else{\"File\"}}} | Format-Table -AutoSize)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Projetos\\\\Nexweb\\\\src\" -Directory | ForEach-Object { $_.Name })"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Projetos\\\\Nexweb\\\\src\" -Directory | ForEach-Object { $_.Name })",
+      "Bash(npx tsc *)",
+      "Bash(mvn dependency:get -Dartifact=dev.samstevens.totp:totp:1.7.1 -q)",
+      "Bash(jar tf *)",
+      "Bash(findstr /i \"Exception\\\\|code\\\\\\\\\")"
     ]
   }
 }

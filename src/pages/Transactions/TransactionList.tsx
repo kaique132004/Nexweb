@@ -78,22 +78,22 @@ export default function TransactionList() {
 
             {/* Pending closes badge — Supervisor only */}
             {isSupervisor && (
-              <button
-                onClick={() => setIsPendingOpen(true)}
-                className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#1e1e1e] text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-                title="Review pending closes"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
-                <span className="hidden sm:inline">Pending Closes</span>
+              <div className="relative">
+                <Button size="sm" variant="outline" onClick={() => setIsPendingOpen(true)}>
+                  <span className="flex items-center gap-1.5">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    <span className="hidden sm:inline">Pending Closes</span>
+                  </span>
+                </Button>
                 {pendingCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  <span className="pointer-events-none absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
                     {pendingCount > 9 ? "9+" : pendingCount}
                   </span>
                 )}
-              </button>
+              </div>
             )}
 
             {/* Audit Config — Supervisor only */}

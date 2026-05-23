@@ -185,7 +185,7 @@ export default function UserMetaCard({ userId }: UserMetaCardProps) {
       ? `${user.first_name} ${user.last_name}`
       : user?.username || "User";
 
-  const currentProfilePicture = profilePicturePreview || "/SITA_LOGO-AVATAR-GREEN.png";
+  const currentProfilePicture = profilePicturePreview || "/user_default.png";
 
   if (loading) {
     return (

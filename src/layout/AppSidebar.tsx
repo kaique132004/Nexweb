@@ -287,9 +287,9 @@ const AppSidebar: React.FC = () => {
     <aside
       className={`
         fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 
-        bg-[#2B3E2B] dark:bg-[#1e1e1e]
-        text-white h-screen transition-all duration-300 ease-in-out 
-        z-50 border-r border-[#4c3de3]
+        bg-[#1a3552] dark:bg-[#1e1e1e]
+        text-white h-screen transition-all duration-300 ease-in-out
+        z-50 border-r border-[#2a5080]
         ${isSidebarOpen ? "w-[290px]" : "w-[90px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
@@ -308,14 +308,14 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/logo.png"
+                src="/3a4a3985-ceb5-4a84-911b-4e14fbba3957.png"
                 alt="Logo"
                 width={270}
                 height={40}
               />
               <img
                 className="hidden dark:block"
-                src="/logo.png"
+                src="/3a4a3985-ceb5-4a84-911b-4e14fbba3957.png"
                 alt="Logo"
                 width={270}
                 height={40}
@@ -323,7 +323,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/logo.png"
+              src="/0b82da0c-c44b-42bb-b153-ae27d4557afe.png"
               alt="Logo"
               width={102}
               height={102}
@@ -407,7 +407,7 @@ const AppSidebar: React.FC = () => {
       </div>
 
       {/* Footer - fixo no bottom */}
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 bg-[#2B3E2B] dark:bg-[#1e1e1e] border-t border-[#4c3de3]/30">
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 bg-[#1a3552] dark:bg-[#1e1e1e] border-t border-[#2a5080]/40">
         {isSidebarOpen ? (
           <div className="flex flex-col gap-3 pt-4">
             <button
