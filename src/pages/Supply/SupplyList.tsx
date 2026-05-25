@@ -11,7 +11,7 @@ import type {SupplyOption} from "../../shared/types/supply.ts";
 export default function SupplyList() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingRegion, setEditingRegion] = useState<SupplyOption | any>(null);
-
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const openCreate = () => {
         setEditingRegion(null);
@@ -20,6 +20,7 @@ export default function SupplyList() {
 
     const handleSaved = () => {
         setIsFormOpen(false);
+        setRefreshTrigger((t) => t + 1);
     }
 
     return (
@@ -36,10 +37,13 @@ export default function SupplyList() {
                     Add new Supply
                 </Button>
             }>
-                <SuppliesTable onEditSupply={(supply: any) => {
-                    setEditingRegion(supply);
-                    setIsFormOpen(true);
-                }}/>
+                <SuppliesTable
+                    onEditSupply={(supply: any) => {
+                        setEditingRegion(supply);
+                        setIsFormOpen(true);
+                    }}
+                    refreshTrigger={refreshTrigger}
+                />
             </ComponentCard>
 
             {/* Modal de Supply */}

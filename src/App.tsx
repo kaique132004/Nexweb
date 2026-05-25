@@ -22,7 +22,7 @@ const FormElements = lazy(() => import("./pages/Forms/FormElements"));
 const Blank = lazy(() => import("./pages/Blank"));
 const AppLayout = lazy(() => import("./layout/AppLayout"));
 const Home = lazy(() => import("./pages/Dashboard/Home"));
-const Asset = lazy(() => import("./pages/Dashboard/Asset"));
+const Asset = lazy(() => import("./pages/Asset/AssetList"));
 const UserList = lazy(() => import("./pages/Users/UserList"));
 const RegionList = lazy(() => import("./pages/Region/RegionList"));
 const SupplyList = lazy(() => import("./pages/Supply/SupplyList"));

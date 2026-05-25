@@ -132,64 +132,64 @@ export default function UserInfoCard({ userId }: UserInfoCardProps) {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           {/* Informações somente leitura */}
           <div>
-            <h4 className="text-lg font-semibold text-gray-800 lg:mb-6">
+            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
               Personal Information
             </h4>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   First Name
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.first_name}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Last Name
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.last_name}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Email address
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.email}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Role
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.role}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Type of account
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.is_not_temporary ? "Permanent" : "Temporary"}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Regions
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user?.regions?.join(", ")}
                 </p>
               </div>
               {/* Novo campo para status do 2FA */}
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Two-Factor Auth
                 </p>
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {twoFactorEnabled ? "Enabled" : "Disabled"}
                 </p>
               </div>

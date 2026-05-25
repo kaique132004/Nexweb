@@ -20,6 +20,9 @@ export interface RegionalPrice {
     price: number;
     quantity: number;
     min_stock_alert: number;
+    alert_acknowledged: boolean;
+    alert_acknowledged_by: string | null;
+    alert_acknowledged_at: string | null;
 }
 
 export interface SupplyRequestSnake {
