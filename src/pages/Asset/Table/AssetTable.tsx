@@ -13,6 +13,7 @@ import AssetTransferModal from "../AssetTransferModal.tsx";
 import AssetMaintenanceModal from "../AssetMaintenanceModal.tsx";
 import AssetHistoryModal from "../AssetHistoryModal.tsx";
 import AssetAssignModal from "../AssetAssignModal.tsx";
+import AssetSparePartsModal from "../AssetSparePartsModal.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 
 // ─── Status → badge color ────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
   const [maintenanceMode,  setMaintenanceMode]  = useState<"start" | "end">("start");
   const [historyOpen,      setHistoryOpen]      = useState(false);
   const [assignOpen,       setAssignOpen]       = useState(false);
+  const [sparePartsOpen,   setSparePartsOpen]   = useState(false);
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -209,6 +211,11 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
       onClick: (a) => { select(a); setMaintenanceMode("end"); setMaintenanceOpen(true); },
     },
     {
+      label: "Manage Spare Parts",
+      onClick: (a) => { select(a); setSparePartsOpen(true); },
+      hidden: (a) => a.status === "DECOMMISSIONED" || a.status === "LOST",
+    },
+    {
       label: "Report as Lost",
       hidden: (a) => a.status === "LOST" || a.status === "DECOMMISSIONED",
       onClick: handleReportLost,
@@ -266,6 +273,14 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
         isOpen={assignOpen}
         asset={selectedAsset}
         onClose={() => { setAssignOpen(false); setSelectedAsset(null); }}
+        onSaved={afterAction}
+      />
+
+      {/* Spare Parts */}
+      <AssetSparePartsModal
+        isOpen={sparePartsOpen}
+        asset={selectedAsset}
+        onClose={() => { setSparePartsOpen(false); setSelectedAsset(null); }}
         onSaved={afterAction}
       />
     </>

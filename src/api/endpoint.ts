@@ -13,4 +13,5 @@ export const API_ENDPOINTS = {
   weeklyClose: `${API_BASE}/api/v2/weekly-close`,
   auditConfig: `${API_BASE}/api/v2/audit-config`,
   asset: `${API_BASE}/api/v2/assets`,
+  spareParts: `${API_BASE}/api/v2/spare-parts`,
 };

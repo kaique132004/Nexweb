@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import BugReportModal from "../components/BugReportModal";
 
 import {
+  BoxCubeIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
@@ -42,7 +43,14 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     subItems: [
       { name: "Supply", path: "/", pro: false },
+    ],
+  },
+  {
+    icon: <BoxCubeIcon />,
+    name: "Assets",
+    subItems: [
       { name: "Assets", path: "/asset", pro: false },
+      { name: "Spare Parts", path: "/spare-parts", pro: false },
     ],
   },
   {

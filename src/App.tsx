@@ -23,6 +23,7 @@ const Blank = lazy(() => import("./pages/Blank"));
 const AppLayout = lazy(() => import("./layout/AppLayout"));
 const Home = lazy(() => import("./pages/Dashboard/Home"));
 const Asset = lazy(() => import("./pages/Asset/AssetList"));
+const SparePartList = lazy(() => import("./pages/SpareParts/SparePartList"));
 const UserList = lazy(() => import("./pages/Users/UserList"));
 const RegionList = lazy(() => import("./pages/Region/RegionList"));
 const SupplyList = lazy(() => import("./pages/Supply/SupplyList"));
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
             <Route path="/asset" element={<Asset />} />
+            <Route path="/spare-parts" element={<SparePartList />} />
             <Route path="/form-elements" element={<FormElements />} />
             <Route path="/basic-tables" element={<BasicTables />} />
             <Route path="/alerts" element={<Alerts />} />
