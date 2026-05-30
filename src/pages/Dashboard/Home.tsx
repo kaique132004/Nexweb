@@ -30,6 +30,7 @@ export type Movement = {
     total_price: number;
     type_entry: "IN" | "OUT";
     obs_alter: string | null;
+    created_by: string;
 };
 
 // ── helpers ──────────────────────────────────────────────────────────────────

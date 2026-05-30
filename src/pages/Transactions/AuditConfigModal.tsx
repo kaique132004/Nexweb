@@ -94,7 +94,7 @@ function EditDrawer({ cfg, onSaved, onCancel }: EditDrawerProps) {
         `${API_ENDPOINTS.auditConfig}/${cfg.region_id}`,
         { method: "PUT", body: JSON.stringify(body) }
       );
-      onSaved(updated);
+      if (updated) onSaved(updated);
     } catch (e: any) {
       setError(e?.message ?? "Failed to save");
     } finally {

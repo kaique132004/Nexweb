@@ -34,7 +34,9 @@ export type AssetEventType =
   | "STATUS_CHANGED"
   | "DECOMMISSIONED"
   | "REPORTED_LOST"
-  | "RECOVERED";
+  | "RECOVERED"
+  | "AUDIT_VERIFIED"
+  | "IMPORTED_FROM_EXTERNAL";
 
 // ─── Main asset object (response) ────────────────────────────────────────────
 
@@ -62,6 +64,8 @@ export interface Asset {
   updated_at?: string;
   created_by?: string;
   updated_by?: string;
+  last_audit_at?: string;
+  last_audit_by?: string;
 }
 
 // ─── Event / audit trail ──────────────────────────────────────────────────────
@@ -100,6 +104,46 @@ export interface AssetRequestPayload {
   images?: string[];
 }
 
+// ─── Audit commit result ──────────────────────────────────────────────────────
+
+export interface AssetAuditResult {
+  valid: boolean;
+  errors: string[];
+  asset: Asset;
+}
+
+// ─── Import result ────────────────────────────────────────────────────────────
+
+export interface AssetImportItemResult {
+  asset_tag: string;
+  status: "IMPORTED" | "SKIPPED" | "ERROR";
+  message: string;
+}
+
+export interface AssetImportResult {
+  total_records: number;
+  imported: number;
+  skipped: number;
+  errors: number;
+  details: AssetImportItemResult[];
+}
+
+// ─── Audit-all result ─────────────────────────────────────────────────────────
+
+export interface AssetAuditAllItemResult {
+  asset_id: number;
+  asset_tag: string;
+  valid: boolean;
+  errors: string[];
+}
+
+export interface AssetAuditAllResult {
+  total: number;
+  passed: number;
+  failed: number;
+  details: AssetAuditAllItemResult[];
+}
+
 // ─── Label helpers ────────────────────────────────────────────────────────────
 
 export const ASSET_STATUS_LABELS: Record<AssetStatus, string> = {
@@ -136,7 +180,9 @@ export const ASSET_EVENT_LABELS: Record<AssetEventType, string> = {
   MAINTENANCE_START:"Maintenance Started",
   MAINTENANCE_END:  "Maintenance Ended",
   STATUS_CHANGED:   "Status Changed",
-  DECOMMISSIONED:   "Decommissioned",
-  REPORTED_LOST:    "Reported Lost",
-  RECOVERED:        "Recovered",
+  DECOMMISSIONED:       "Decommissioned",
+  REPORTED_LOST:        "Reported Lost",
+  RECOVERED:            "Recovered",
+  AUDIT_VERIFIED:       "Audit Verified",
+  IMPORTED_FROM_EXTERNAL: "Imported from External",
 };

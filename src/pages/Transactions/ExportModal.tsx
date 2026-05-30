@@ -153,8 +153,6 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, filters }) =
     }
   };
 
-  const colors = FORMAT_COLORS[format];
-
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (

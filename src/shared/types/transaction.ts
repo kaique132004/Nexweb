@@ -34,7 +34,7 @@ export interface TransactionResponse {
     price_unit: number;
     total_price: number;
     type_entry: string;
-    obs_alter: string;
+    obs_alter: string | null;
     created_by: string;
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent} from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Table,
     TableBody,
@@ -86,7 +86,7 @@ export function DataTable<T extends object>({
     useEffect(() => {
         if (!contextMenu.visible) return;
 
-        const handleClickOutside = (e: MouseEvent) => {
+        const handleClickOutside = (e: globalThis.MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
                 setContextMenu((prev) => ({...prev, visible: false, row: null}));
             }
@@ -120,7 +120,7 @@ export function DataTable<T extends object>({
     };
 
     const handleRowContextMenu = (
-        e: React.MouseEvent<HTMLTableRowElement, React.MouseEvent>,
+        e: React.MouseEvent<HTMLTableRowElement>,
         row: T
     ) => {
         if (!contextMenuActions?.length) return;
@@ -211,7 +211,7 @@ export function DataTable<T extends object>({
                             data.map((row) => (
                                 <TableRow
                                     key={String(row[rowKey])}
-                                    onContextMenu={(e: MouseEvent<HTMLTableRowElement, MouseEvent>) => handleRowContextMenu(e, row)}
+                                    onContextMenu={(e: React.MouseEvent<HTMLTableRowElement>) => handleRowContextMenu(e, row)}
                                     onClick={() => onRowClick?.(row)}
                                     className={[
                                         contextMenuActions?.length || onRowClick

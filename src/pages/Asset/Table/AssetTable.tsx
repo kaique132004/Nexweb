@@ -14,6 +14,7 @@ import AssetMaintenanceModal from "../AssetMaintenanceModal.tsx";
 import AssetHistoryModal from "../AssetHistoryModal.tsx";
 import AssetAssignModal from "../AssetAssignModal.tsx";
 import AssetSparePartsModal from "../AssetSparePartsModal.tsx";
+import AssetAuditCommitModal from "../AssetAuditCommitModal.tsx";
 import { authFetch } from "../../../api/apiAuth.ts";
 
 // ─── Status → badge color ────────────────────────────────────────────────────
@@ -47,6 +48,7 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
   const [historyOpen,      setHistoryOpen]      = useState(false);
   const [assignOpen,       setAssignOpen]       = useState(false);
   const [sparePartsOpen,   setSparePartsOpen]   = useState(false);
+  const [auditCommitOpen,  setAuditCommitOpen]  = useState(false);
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -172,6 +174,32 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
       className: "px-5 py-4 text-start text-xs text-gray-400 dark:text-gray-500",
       render: (a) => formatDate(a.created_at),
     },
+    {
+      key: "_actions",
+      label: "",
+      className: "px-3 py-4 text-end",
+      render: (a) => {
+        if (a.status === "DECOMMISSIONED") return null;
+        const auditedToday = !!a.last_audit_at &&
+          new Date(a.last_audit_at).toDateString() === new Date().toDateString();
+        if (auditedToday) {
+          return (
+            <span className="inline-flex items-center gap-1 rounded-md bg-success-50 px-2.5 py-1 text-xs font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
+              ✓ Audited
+            </span>
+          );
+        }
+        return (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); select(a); setAuditCommitOpen(true); }}
+            className="whitespace-nowrap rounded-md border border-brand-200 px-2.5 py-1 text-xs font-medium text-brand-600 transition-colors hover:bg-brand-50 dark:border-brand-700 dark:text-brand-400 dark:hover:bg-brand-500/10"
+          >
+            {a.last_audit_at ? "Re-audit" : "Audit"}
+          </button>
+        );
+      },
+    },
   ];
 
   // ─── Context menu actions ─────────────────────────────────────────────────
@@ -214,6 +242,11 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
       label: "Manage Spare Parts",
       onClick: (a) => { select(a); setSparePartsOpen(true); },
       hidden: (a) => a.status === "DECOMMISSIONED" || a.status === "LOST",
+    },
+    {
+      label: "Audit Commit",
+      hidden: (a) => a.status === "DECOMMISSIONED",
+      onClick: (a) => { select(a); setAuditCommitOpen(true); },
     },
     {
       label: "Report as Lost",
@@ -281,6 +314,14 @@ export default function AssetTable({ onEditAsset, onRefresh, refreshTrigger }: A
         isOpen={sparePartsOpen}
         asset={selectedAsset}
         onClose={() => { setSparePartsOpen(false); setSelectedAsset(null); }}
+        onSaved={afterAction}
+      />
+
+      {/* Audit Commit */}
+      <AssetAuditCommitModal
+        isOpen={auditCommitOpen}
+        asset={selectedAsset}
+        onClose={() => { setAuditCommitOpen(false); setSelectedAsset(null); }}
         onSaved={afterAction}
       />
     </>

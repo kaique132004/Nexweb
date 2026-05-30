@@ -140,7 +140,7 @@ export default function StatisticsChart({
       },
       y: {
         formatter: (val: number, opts) => {
-          const seriesName = opts.seriesIndex === 0 ? "Qtd" : "Total";
+          const seriesName = opts?.seriesIndex === 0 ? "Qtd" : "Total";
           return `${seriesName}: ${val}`;
         },
       },

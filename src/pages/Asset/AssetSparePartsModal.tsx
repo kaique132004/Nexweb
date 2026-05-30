@@ -53,7 +53,7 @@ export default function AssetSparePartsModal({ isOpen, asset, onClose, onSaved }
             const data = await authFetch<AssetSparePart[]>(
                 `${API_ENDPOINTS.asset}/${asset.id}/parts`
             );
-            setRecords(data);
+            setRecords(data ?? []);
         } catch (e: unknown) {
             setError((e as Error).message ?? "Failed to load parts");
         } finally {
@@ -66,7 +66,7 @@ export default function AssetSparePartsModal({ isOpen, asset, onClose, onSaved }
             const data = await authFetch<{ content: SparePart[] }>(
                 `${API_ENDPOINTS.spareParts}/list?size=200`
             );
-            setCatalogue(data.content ?? []);
+            setCatalogue(data?.content ?? []);
         } catch {
             setCatalogue([]);
         }
