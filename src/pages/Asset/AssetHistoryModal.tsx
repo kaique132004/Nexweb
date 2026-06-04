@@ -10,16 +10,18 @@ import { formatDate } from "../../shared/utils/date.ts";
 // ─── Event icon ───────────────────────────────────────────────────────────────
 
 const EVENT_ICON: Record<AssetEventType, string> = {
-  CREATED:          "🆕",
-  ASSIGNED:         "👤",
-  UNASSIGNED:       "🔓",
-  TRANSFERRED:      "🚚",
-  MAINTENANCE_START:"🔧",
-  MAINTENANCE_END:  "✅",
-  STATUS_CHANGED:   "🔄",
-  DECOMMISSIONED:   "🗑️",
-  REPORTED_LOST:    "🚨",
-  RECOVERED:        "🎉",
+  CREATED: "🆕",
+  ASSIGNED: "👤",
+  UNASSIGNED: "🔓",
+  TRANSFERRED: "🚚",
+  MAINTENANCE_START: "🔧",
+  MAINTENANCE_END: "✅",
+  STATUS_CHANGED: "🔄",
+  DECOMMISSIONED: "🗑️",
+  REPORTED_LOST: "🚨",
+  RECOVERED: "🎉",
+  AUDIT_VERIFIED: "",
+  IMPORTED_FROM_EXTERNAL: ""
 };
 
 // ─── Status pill ──────────────────────────────────────────────────────────────
